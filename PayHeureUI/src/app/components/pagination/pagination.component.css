@@ -1,0 +1,67 @@
+/* Mêmes codes visuels que catalog-frontend (boutons beiges arrondis, lift au survol,
+   beige plus soutenu pour l'état courant). */
+.pagination {
+  gap: 6px;
+}
+
+.pagination .page-item .page-link {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border: 1px solid #E8DED2;
+  border-radius: 4px;
+  background-color: white;
+  color: var(--color-text-dark);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.pagination .page-item:not(.disabled):not(.active) .page-link:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.pagination .page-item .page-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(217, 207, 190, 0.4);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #C4B5A8;
+  border-color: #C4B5A8;
+  color: var(--color-text-light);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.pagination .page-item.disabled .page-link {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--color-text-muted);
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+@media (max-width: 480px) {
+  .pagination .page-item .page-link {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 8px;
+    font-size: 14px;
+  }
+}
+
+/* En RTL (arabe), le navigateur inverse automatiquement l'ordre des items du flex
+   ".pagination" (précédent à droite, suivant à gauche), ce qui est le comportement
+   attendu pour le sens de lecture. Les icônes chevron ne suivent pas cette inversion
+   et doivent donc être retournées pour continuer à pointer dans le bon sens. */
+:host-context([dir="rtl"]) .pagination .page-item .page-link i {
+  transform: scaleX(-1);
+}

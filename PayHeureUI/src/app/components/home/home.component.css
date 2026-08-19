@@ -1,0 +1,59 @@
+.hero {
+  padding: 80px 20px;
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+}
+
+.hero h1 {
+  font-weight: 700;
+}
+
+/*
+ * Beige plutôt que l'accent brun (cf. catalog-frontend). Le bouton ne peut pas reprendre
+ * `--color-primary` telle quelle : c'est déjà la couleur de fond du hero juste au-dessus, il y
+ * deviendrait invisible. `#C4B5A8` (même teinte que la pagination et l'état actif du fil
+ * d'Ariane) s'en détache légèrement, complété par l'ombre pour marquer le bouton.
+ */
+.btn-hero {
+  background-color: #C4B5A8 !important;
+  border-color: #C4B5A8 !important;
+  color: var(--color-text-dark) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-hero:hover {
+  background-color: var(--color-bg) !important;
+  border-color: var(--color-bg) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.features {
+  padding: 60px 20px;
+}
+
+.feature-card {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px 20px;
+  text-align: center;
+  height: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.feature-card i {
+  font-size: 32px;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+}
+
+.feature-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.feature-card p {
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+}

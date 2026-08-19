@@ -1,0 +1,64 @@
+{
+  "NAV": {
+    "HOME": "Accueil",
+    "PAIE": "Calcul de paie",
+    "TOGGLE": "Ouvrir/fermer la navigation"
+  },
+  "LANG": {
+    "SWITCH": "Langue"
+  },
+  "PAGINATION": {
+    "PREV_PAGE": "Page précédente",
+    "NEXT_PAGE": "Page suivante"
+  },
+  "HOME": {
+    "HERO_TITLE": "PayHeure",
+    "HERO_SUBTITLE": "Calculez la paie de vos salariés directement à partir de leurs pointages",
+    "HERO_CTA": "Calculer une paie",
+    "FEATURE_SEARCH_TITLE": "Rechercher un salarié",
+    "FEATURE_SEARCH_TEXT": "Retrouvez un salarié par son matricule, son nom ou son prénom",
+    "FEATURE_POINTAGE_TITLE": "Récupérer les pointages",
+    "FEATURE_POINTAGE_TEXT": "Les badgeages du salarié sont automatiquement appariés en entrées/sorties",
+    "FEATURE_CALCUL_TITLE": "Calculer le montant dû",
+    "FEATURE_CALCUL_TEXT": "Saisissez le taux horaire, le montant est calculé sur les heures et minutes travaillées"
+  },
+  "FOOTER": {
+    "RIGHTS": "Tous droits réservés"
+  },
+  "PAIE": {
+    "TITLE": "Calcul de paie",
+    "SUBTITLE": "Recherchez un salarié, choisissez une période et un taux horaire pour calculer le montant dû",
+    "STEP_1": "1. Salarié",
+    "STEP_2": "2. Période et taux horaire",
+    "SEARCH_LABEL": "Rechercher un salarié",
+    "SEARCH_PLACEHOLDER": "Matricule, nom ou prénom",
+    "SEARCH_EMPTY": "Aucun salarié ne correspond à cette recherche.",
+    "SEARCH_PAGINATION": "Pagination des salariés",
+    "NO_EMPLOYEE_SELECTED": "Sélectionnez d'abord un salarié dans la liste de gauche.",
+    "DATE_START": "Date de début",
+    "TIME_START": "Heure de début",
+    "DATE_END": "Date de fin",
+    "TIME_END": "Heure de fin",
+    "HOURLY_RATE": "Tarif horaire",
+    "HOURLY_RATE_PLACEHOLDER": "ex. 35.00 DH",
+    "CALCULATE": "Calculer",
+    "CALCUL_ERROR": "Une erreur est survenue lors du calcul.",
+    "INVALID_PERIOD": "La date de fin ne peut pas être antérieure à la date de début.",
+    "RESULT_EMPLOYEE": "Salarié",
+    "RESULT_PERIOD": "Période",
+    "RESULT_RATE": "Tarif horaire",
+    "RESULT_DURATION": "Durée travaillée",
+    "RESULT_TOTAL": "Montant total",
+    "RESULT_CALCUL_DATE": "Date et heure du calcul",
+    "RESULT_ANOMALIES": "{{count}} session(s) avec une sortie manquante, exclue(s) du total.",
+    "RESULT_COL_DATE": "Date",
+    "RESULT_COL_IN": "Entrée",
+    "RESULT_COL_OUT": "Sortie",
+    "RESULT_COL_DURATION": "Durée",
+    "RESULT_MISSING_OUT": "Sortie manquante",
+    "RESULT_EMPTY": "Aucun pointage sur cette période.",
+    "RESULT_MINUTES": "min",
+    "CURRENCY": "DH",
+    "PER_HOUR": "/ h"
+  }
+}

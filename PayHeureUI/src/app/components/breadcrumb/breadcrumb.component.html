@@ -1,0 +1,9 @@
+<nav class="app-breadcrumb" aria-label="breadcrumb">
+  <ol class="breadcrumb mb-0">
+    <li class="breadcrumb-item" *ngFor="let item of items; let last = last"
+        [class.active]="last" [attr.aria-current]="last ? 'page' : null">
+      <a *ngIf="!last && item.link" [routerLink]="item.link">{{ item.label ?? (item.labelKey! | translate) }}</a>
+      <span *ngIf="last || !item.link">{{ item.label ?? (item.labelKey! | translate) }}</span>
+    </li>
+  </ol>
+</nav>

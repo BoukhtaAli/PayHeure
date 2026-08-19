@@ -1,0 +1,18 @@
+/* Fixe en bas de l'écran (comme la navbar en haut), toujours visible pendant le défilement —
+   pas seulement poussé en bas d'une page courte comme le permettait le seul flex du wrapper. */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: var(--footer-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary);
+  color: var(--color-text-muted);
+  padding: 16px 0;
+  font-size: 14px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}

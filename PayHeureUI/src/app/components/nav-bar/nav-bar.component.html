@@ -1,0 +1,37 @@
+<nav class="navbar navbar-expand-lg" role="navigation">
+  <a class="navbar-brand" routerLink="/home">
+    <i class="fas fa-money-check-dollar" aria-hidden="true"></i>
+    PayHeure
+  </a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+          aria-controls="navbarText" aria-expanded="false" [attr.aria-label]="'NAV.TOGGLE' | translate">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarText">
+    <ul class="navbar-nav mx-auto">
+      <li *ngFor="let menuItem of mainMenu" class="nav-item mx-3">
+        <a class="nav-link" [routerLink]="[menuItem.route]" routerLinkActive="router-active">
+          <i [ngClass]="menuItem.icon" aria-hidden="true"></i>
+          <span class="nav-item-text-style">{{ menuItem.labelKey | translate }}</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="language-switcher dropdown">
+      <button class="lang-toggle-btn dropdown-toggle" type="button" id="langSwitcher"
+              data-bs-toggle="dropdown" aria-expanded="false" [attr.aria-label]="'LANG.SWITCH' | translate">
+        <span class="fi" [ngClass]="currentLang.flag"></span>
+        <span class="lang-code">{{ currentLang.code | uppercase }}</span>
+      </button>
+      <ul class="dropdown-menu" [class.dropdown-menu-end]="currentLang.dir !== 'rtl'" aria-labelledby="langSwitcher">
+        <li *ngFor="let lang of languages">
+          <button type="button" class="dropdown-item" [class.active]="lang.code === currentLang.code"
+                  (click)="switchLang(lang.code)">
+            <span class="fi" [ngClass]="lang.flag"></span>
+            <span>{{ lang.label }}</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

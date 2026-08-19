@@ -1,0 +1,107 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  min-height: var(--navbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  padding-inline: 24px;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.navbar-brand {
+  color: var(--color-text-light);
+  font-weight: 600;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-nav .nav-item .nav-link {
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: transform 0.3s ease, text-decoration 0.3s ease, color 0.3s ease;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+  transform: scale(1.1);
+}
+
+.nav-item-text-style {
+  font-size: 18px;
+  margin-inline: 10px;
+}
+
+.router-active {
+  border-bottom: 2px solid var(--color-accent);
+  padding-bottom: 2px;
+  color: var(--color-text-light);
+}
+
+.language-switcher {
+  display: flex;
+  align-items: center;
+  margin-inline-start: 10px;
+}
+
+.lang-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--color-text-muted);
+  border-radius: 20px;
+  padding: 4px 12px;
+  color: var(--color-text-light);
+  cursor: pointer;
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.lang-toggle-btn:hover {
+  border-color: var(--color-accent);
+  transform: scale(1.05);
+}
+
+.lang-toggle-btn .fi {
+  border-radius: 3px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+.lang-code {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.language-switcher .dropdown-menu {
+  min-width: 14rem;
+  max-width: calc(100vw - 1.5rem);
+  margin-inline: 1.5rem;
+}
+
+.language-switcher .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-inline: 1.5rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.language-switcher .dropdown-item.active {
+  background-color: var(--color-primary);
+  color: var(--color-text-dark);
+}
+
+@media (max-width: 991.98px) {
+  .language-switcher {
+    justify-content: center;
+    margin-top: 12px;
+  }
+}

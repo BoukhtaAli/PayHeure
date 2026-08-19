@@ -1,0 +1,54 @@
+.summary-card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.summary-item .label {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-item .value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.summary-item.highlight .value {
+  color: var(--color-accent);
+  font-size: 20px;
+}
+
+.sessions-table thead {
+  background-color: var(--color-primary);
+}
+
+/* Centré : plus d'air entre les colonnes qu'un alignement au bord, sans toucher la largeur du
+   tableau. Cellules de données dans la même police/poids que les valeurs du résumé au-dessus
+   (.summary-item .value), pour une lecture cohérente entre les deux blocs. */
+.sessions-table th,
+.sessions-table td {
+  text-align: center;
+}
+
+.sessions-table tbody td {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}

@@ -1,0 +1,42 @@
+.app-breadcrumb {
+  margin-bottom: 1rem;
+}
+
+/*
+ * Bootstrap positionne le séparateur (::before) et l'espacement entre miettes avec des propriétés
+ * physiques (`float: left`, `padding-left`/`padding-right`), qui ne s'inversent pas tout seules en
+ * RTL puisque seule la feuille de style LTR (bootstrap.min.css) est chargée ici. Résultat en arabe :
+ * miettes collées ou séparateur du mauvais côté. On neutralise ces règles et on repose sur `gap`,
+ * qui suit toujours l'ordre visuel du flex (donc `dir="rtl"`) sans configuration spécifique.
+ */
+.app-breadcrumb .breadcrumb {
+  gap: 0.5rem;
+}
+
+.app-breadcrumb .breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0;
+  color: var(--color-text-muted);
+}
+
+.app-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+  float: none;
+  padding-right: 0;
+  color: var(--color-text-muted);
+}
+
+.breadcrumb-item a {
+  color: var(--color-text-dark);
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+  color: var(--color-text-muted);
+}

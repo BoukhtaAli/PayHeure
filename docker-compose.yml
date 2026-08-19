@@ -1,0 +1,53 @@
+services:
+
+  db:
+    image: mysql:8
+    container_name: mysql_db_payheure
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: payheure_database_container
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - payheure-net
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  payheure-backend:
+    build: .
+    container_name: payheure_backend_container
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/payheure_database_container
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      PAYHEURE_SEED_DEMO: "true"
+    networks:
+      - payheure-net
+
+  frontend:
+    build: ./PayHeureUI
+    container_name: payheure_frontend_container
+    ports:
+      - "4200:80"
+    depends_on:
+      - payheure-backend
+    networks:
+      - payheure-net
+
+volumes:
+  mysql_data:
+
+networks:
+  payheure-net:
+    driver: bridge

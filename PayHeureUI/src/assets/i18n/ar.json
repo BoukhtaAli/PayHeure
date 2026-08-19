@@ -1,0 +1,64 @@
+{
+  "NAV": {
+    "HOME": "الرئيسية",
+    "PAIE": "حساب الأجر",
+    "TOGGLE": "فتح/إغلاق التنقل"
+  },
+  "LANG": {
+    "SWITCH": "اللغة"
+  },
+  "PAGINATION": {
+    "PREV_PAGE": "الصفحة السابقة",
+    "NEXT_PAGE": "الصفحة التالية"
+  },
+  "HOME": {
+    "HERO_TITLE": "PayHeure",
+    "HERO_SUBTITLE": "احسب أجور موظفيك مباشرة انطلاقا من بطاقات تسجيل الحضور",
+    "HERO_CTA": "احسب أجرا",
+    "FEATURE_SEARCH_TITLE": "البحث عن موظف",
+    "FEATURE_SEARCH_TEXT": "ابحث عن موظف برقمه التعريفي أو اسمه العائلي أو اسمه الشخصي",
+    "FEATURE_POINTAGE_TITLE": "استرجاع بطاقات التسجيل",
+    "FEATURE_POINTAGE_TEXT": "يتم تلقائيا ترتيب تسجيلات الموظف في جلسات دخول/خروج",
+    "FEATURE_CALCUL_TITLE": "احتساب المبلغ المستحق",
+    "FEATURE_CALCUL_TEXT": "أدخل الأجر بالساعة، ويُحتسب المبلغ حسب الساعات والدقائق المُنجزة"
+  },
+  "FOOTER": {
+    "RIGHTS": "جميع الحقوق محفوظة"
+  },
+  "PAIE": {
+    "TITLE": "حساب الأجر",
+    "SUBTITLE": "ابحث عن موظف، واختر فترة وأجرا بالساعة لاحتساب المبلغ المستحق",
+    "STEP_1": "1. الموظف",
+    "STEP_2": "2. الفترة والأجر بالساعة",
+    "SEARCH_LABEL": "البحث عن موظف",
+    "SEARCH_PLACEHOLDER": "الرقم التعريفي أو الاسم العائلي أو الاسم الشخصي",
+    "SEARCH_EMPTY": "لا يوجد موظف يطابق هذا البحث.",
+    "SEARCH_PAGINATION": "ترقيم صفحات الموظفين",
+    "NO_EMPLOYEE_SELECTED": "اختر أولا موظفا من القائمة على اليسار.",
+    "DATE_START": "تاريخ البداية",
+    "TIME_START": "وقت البداية",
+    "DATE_END": "تاريخ النهاية",
+    "TIME_END": "وقت النهاية",
+    "HOURLY_RATE": "تعريفة الساعة",
+    "HOURLY_RATE_PLACEHOLDER": "مثال: 35.00 درهم",
+    "CALCULATE": "احتساب",
+    "CALCUL_ERROR": "حدث خطأ أثناء الاحتساب.",
+    "INVALID_PERIOD": "لا يمكن أن يكون تاريخ النهاية سابقا لتاريخ البداية.",
+    "RESULT_EMPLOYEE": "الموظف",
+    "RESULT_PERIOD": "الفترة",
+    "RESULT_RATE": "تعريفة الساعة",
+    "RESULT_DURATION": "مدة العمل",
+    "RESULT_TOTAL": "المبلغ الإجمالي",
+    "RESULT_CALCUL_DATE": "تاريخ ووقت الاحتساب",
+    "RESULT_ANOMALIES": "{{count}} جلسة (جلسات) بدون تسجيل خروج، مستبعدة من المجموع.",
+    "RESULT_COL_DATE": "التاريخ",
+    "RESULT_COL_IN": "الدخول",
+    "RESULT_COL_OUT": "الخروج",
+    "RESULT_COL_DURATION": "المدة",
+    "RESULT_MISSING_OUT": "تسجيل الخروج مفقود",
+    "RESULT_EMPTY": "لا يوجد أي تسجيل حضور خلال هذه الفترة.",
+    "RESULT_MINUTES": "دقيقة",
+    "CURRENCY": "درهم",
+    "PER_HOUR": "/ س"
+  }
+}

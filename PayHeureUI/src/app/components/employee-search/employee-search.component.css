@@ -1,0 +1,35 @@
+.employee-list {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.list-group-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.list-group-item.active {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+/* Même police/poids et centrage que le tableau des sessions (voir pointage-result.component.css),
+   pour une lecture cohérente entre les deux tableaux de l'écran. Centrer laisse plus d'air entre
+   la colonne matricule et le nom qu'un alignement au bord. */
+.matricule {
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-text-dark);
+  min-width: 60px;
+  text-align: center;
+}
+
+.name {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  text-align: center;
+}

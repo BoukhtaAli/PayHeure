@@ -1,0 +1,65 @@
+<div class="pointage-result" *ngIf="result">
+
+  <div class="summary-card">
+    <div class="summary-item">
+      <span class="label">{{ 'PAIE.RESULT_EMPLOYEE' | translate }}</span>
+      <span class="value">{{ result.employee.prenom }} {{ result.employee.nom }} ({{ result.employee.matricule }})</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">{{ 'PAIE.RESULT_PERIOD' | translate }}</span>
+      <span class="value" dir="ltr">{{ result.dateDebut | date:'dd-MM-yyyy HH:mm' }} - {{ result.dateFin | date:'dd-MM-yyyy HH:mm' }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">{{ 'PAIE.RESULT_RATE' | translate }}</span>
+      <span class="value">{{ result.tauxHoraire | number:'1.2-2' }} {{ 'PAIE.CURRENCY' | translate }} {{ 'PAIE.PER_HOUR' | translate }}</span>
+    </div>
+    <div class="summary-item highlight">
+      <span class="label">{{ 'PAIE.RESULT_DURATION' | translate }}</span>
+      <span class="value">{{ result.totalDureeFormatee }}</span>
+    </div>
+    <div class="summary-item highlight">
+      <span class="label">{{ 'PAIE.RESULT_TOTAL' | translate }}</span>
+      <span class="value amount">{{ result.montantTotal | number:'1.2-2' }} {{ 'PAIE.CURRENCY' | translate }}</span>
+    </div>
+    <div class="summary-item">
+      <span class="label">{{ 'PAIE.RESULT_CALCUL_DATE' | translate }}</span>
+      <span class="value" dir="ltr">{{ result.dateHeureCalcul | date:'dd-MM-yyyy HH:mm' }}</span>
+    </div>
+  </div>
+
+  <div class="alert alert-warning" *ngIf="anomalies.length > 0">
+    <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+    {{ 'PAIE.RESULT_ANOMALIES' | translate: { count: anomalies.length } }}
+  </div>
+
+  <table class="table table-hover sessions-table">
+    <thead>
+      <tr>
+        <th>{{ 'PAIE.RESULT_COL_DATE' | translate }}</th>
+        <th>{{ 'PAIE.RESULT_COL_IN' | translate }}</th>
+        <th>{{ 'PAIE.RESULT_COL_OUT' | translate }}</th>
+        <th>{{ 'PAIE.RESULT_COL_DURATION' | translate }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let session of result.sessions" [class.table-warning]="session.anomalie">
+        <td dir="ltr">{{ session.date | date:'dd-MM-yyyy' }}</td>
+        <td dir="ltr">{{ session.heureEntree | date:'HH:mm' }}</td>
+        <td [attr.dir]="session.heureSortie ? 'ltr' : null">
+          <span *ngIf="session.heureSortie">{{ session.heureSortie | date:'HH:mm' }}</span>
+          <span *ngIf="!session.heureSortie" class="text-warning">
+            <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+            {{ 'PAIE.RESULT_MISSING_OUT' | translate }}
+          </span>
+        </td>
+        <td>
+          <span *ngIf="session.anomalie">—</span>
+          <span *ngIf="!session.anomalie">{{ session.dureeMinutes }} {{ 'PAIE.RESULT_MINUTES' | translate }}</span>
+        </td>
+      </tr>
+      <tr *ngIf="result.sessions.length === 0">
+        <td colspan="4" class="text-center text-muted">{{ 'PAIE.RESULT_EMPTY' | translate }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

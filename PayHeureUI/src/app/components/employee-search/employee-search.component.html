@@ -1,0 +1,26 @@
+<div class="employee-search">
+  <label for="employeeQuery" class="form-label fw-semibold">{{ 'PAIE.SEARCH_LABEL' | translate }}</label>
+  <div class="input-group mb-3">
+    <span class="input-group-text"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></span>
+    <input id="employeeQuery" type="text" class="form-control" [formControl]="searchControl"
+           [placeholder]="'PAIE.SEARCH_PLACEHOLDER' | translate">
+  </div>
+
+  <ul class="list-group employee-list" *ngIf="employees.length > 0; else empty">
+    <li *ngFor="let employee of employees" class="list-group-item cursor-pointer"
+        [class.active]="employee.id === selectedEmployeeId" (click)="select(employee)">
+      <span class="matricule">{{ employee.matricule }}</span>
+      <span class="name">{{ employee.prenom }} {{ employee.nom }}</span>
+      <i class="fas fa-check" *ngIf="employee.id === selectedEmployeeId" aria-hidden="true"></i>
+    </li>
+  </ul>
+
+  <ng-template #empty>
+    <p class="text-muted mb-0" *ngIf="searched">{{ 'PAIE.SEARCH_EMPTY' | translate }}</p>
+  </ng-template>
+
+  <app-pagination [page]="page" [totalPages]="totalPages"
+                   [ariaLabel]="'PAIE.SEARCH_PAGINATION' | translate"
+                   (pageChange)="search($event)">
+  </app-pagination>
+</div>

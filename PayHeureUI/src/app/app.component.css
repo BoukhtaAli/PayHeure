@@ -1,0 +1,14 @@
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* padding-bottom réserve la place du footer, fixe en bas de l'écran (voir footer.component.css) :
+   sans ça, le bas du contenu passerait derrière plutôt que de s'arrêter au-dessus. */
+.content-wrapper {
+  flex: 1 0 auto;
+  padding-top: var(--navbar-height-actual, 80px);
+  padding-bottom: calc(var(--footer-height) + 20px);
+  background-color: var(--color-bg);
+}

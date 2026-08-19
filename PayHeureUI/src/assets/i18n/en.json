@@ -1,0 +1,64 @@
+{
+  "NAV": {
+    "HOME": "Home",
+    "PAIE": "Payroll",
+    "TOGGLE": "Toggle navigation"
+  },
+  "LANG": {
+    "SWITCH": "Language"
+  },
+  "PAGINATION": {
+    "PREV_PAGE": "Previous page",
+    "NEXT_PAGE": "Next page"
+  },
+  "HOME": {
+    "HERO_TITLE": "PayHeure",
+    "HERO_SUBTITLE": "Compute your employees' pay directly from their time clock records",
+    "HERO_CTA": "Compute a payroll",
+    "FEATURE_SEARCH_TITLE": "Find an employee",
+    "FEATURE_SEARCH_TEXT": "Look up an employee by their ID, last name or first name",
+    "FEATURE_POINTAGE_TITLE": "Fetch time clock records",
+    "FEATURE_POINTAGE_TEXT": "The employee's punches are automatically paired into clock-in/clock-out sessions",
+    "FEATURE_CALCUL_TITLE": "Compute the amount due",
+    "FEATURE_CALCUL_TEXT": "Enter the hourly rate, the amount is computed from the hours and minutes worked"
+  },
+  "FOOTER": {
+    "RIGHTS": "All rights reserved"
+  },
+  "PAIE": {
+    "TITLE": "Payroll calculation",
+    "SUBTITLE": "Search for an employee, choose a period and an hourly rate to compute the amount due",
+    "STEP_1": "1. Employee",
+    "STEP_2": "2. Period and hourly rate",
+    "SEARCH_LABEL": "Search an employee",
+    "SEARCH_PLACEHOLDER": "ID, last name or first name",
+    "SEARCH_EMPTY": "No employee matches this search.",
+    "SEARCH_PAGINATION": "Employee pagination",
+    "NO_EMPLOYEE_SELECTED": "First select an employee from the list on the left.",
+    "DATE_START": "Start date",
+    "TIME_START": "Start time",
+    "DATE_END": "End date",
+    "TIME_END": "End time",
+    "HOURLY_RATE": "Hourly rate",
+    "HOURLY_RATE_PLACEHOLDER": "e.g. 35.00 DH",
+    "CALCULATE": "Calculate",
+    "CALCUL_ERROR": "An error occurred during the calculation.",
+    "INVALID_PERIOD": "The end date cannot be earlier than the start date.",
+    "RESULT_EMPLOYEE": "Employee",
+    "RESULT_PERIOD": "Period",
+    "RESULT_RATE": "Hourly rate",
+    "RESULT_DURATION": "Time worked",
+    "RESULT_TOTAL": "Total amount",
+    "RESULT_CALCUL_DATE": "Calculation date and time",
+    "RESULT_ANOMALIES": "{{count}} session(s) with a missing clock-out, excluded from the total.",
+    "RESULT_COL_DATE": "Date",
+    "RESULT_COL_IN": "Clock in",
+    "RESULT_COL_OUT": "Clock out",
+    "RESULT_COL_DURATION": "Duration",
+    "RESULT_MISSING_OUT": "Missing clock-out",
+    "RESULT_EMPTY": "No time clock records for this period.",
+    "RESULT_MINUTES": "min",
+    "CURRENCY": "DH",
+    "PER_HOUR": "/ h"
+  }
+}

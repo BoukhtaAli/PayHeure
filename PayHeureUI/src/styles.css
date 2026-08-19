@@ -1,0 +1,45 @@
+:root {
+  --color-primary: #D9CFBE;      /* fond navbar/footer */
+  --color-accent: #6B5637;       /* liens actifs, hover, boutons : brun beige, plus la teinte bleutée d'origine */
+  --color-accent-hover: #8B6F47;
+  --color-bg: #EDE4D3;           /* fond de page, plus clair que la navbar */
+  --color-text-light: #2E3B42;   /* texte sur fond clair (navbar/footer) */
+  --color-text-muted: #6B6455;   /* texte secondaire */
+  --color-text-dark: #2E3B42;    /* texte sur fond clair (body) */
+  --navbar-height: 80px;
+  --footer-height: 60px;
+}
+
+html, body {
+  min-height: 100%;
+  background-color: var(--color-bg);
+}
+
+body {
+  color: var(--color-text-dark);
+  margin: 0;
+}
+
+router-outlet {
+  display: block;
+  margin-bottom: 0;
+}
+
+.btn-accent {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: #fff;
+}
+
+.btn-accent:hover {
+  background-color: var(--color-accent-hover) !important;
+  border-color: var(--color-accent-hover) !important;
+}
+
+.text-accent {
+  color: var(--color-accent) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}

@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: payheure-backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/payheureDb
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    # Les services renvoient des DTO : aucune donnée n'est chargée hors transaction.
+    open-in-view: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+payheure:
+  demo:
+    # Sème quelques salariés et pointages de démonstration au premier démarrage (base vide
+    # uniquement). Mettre à false une fois une vraie bdd de pointage branchée.
+    seed-enabled: ${PAYHEURE_SEED_DEMO:true}
