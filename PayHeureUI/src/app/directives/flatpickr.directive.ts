@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnDestroy, OnInit, forwardRef } from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import flatpickr from 'flatpickr';
 import { Instance } from 'flatpickr/dist/types/instance';
@@ -12,6 +12,10 @@ import { Options } from 'flatpickr/dist/types/options';
  * la langue/région du système ou du navigateur (d'où les soucis vécus ici : MM/dd/yyyy au lieu de
  * dd-MM-yyyy, AM/PM au lieu de 24h), flatpickr dessine sa propre interface : le `dateFormat` qu'on
  * lui donne en `appFlatpickr` est ce que l'utilisateur voit, sur tous les navigateurs et systèmes.
+ *
+ * `appFlatpickr` peut changer après l'init (ex. `minDate`/`maxDate` recalculés quand un autre champ
+ * de la page change) : `ngOnChanges` répercute alors la nouvelle config sur l'instance existante au
+ * lieu de la recréer.
  */
 @Directive({
   selector: '[appFlatpickr]',
@@ -21,7 +25,7 @@ import { Options } from 'flatpickr/dist/types/options';
     multi: true
   }]
 })
-export class FlatpickrDirective implements OnInit, OnDestroy, ControlValueAccessor {
+export class FlatpickrDirective implements OnInit, OnChanges, OnDestroy, ControlValueAccessor {
 
   @Input() appFlatpickr: Partial<Options> = {};
 
@@ -40,6 +44,17 @@ export class FlatpickrDirective implements OnInit, OnDestroy, ControlValueAccess
       onClose: () => this.onTouchedFn()
     });
 
+    // Filet de sécurité pour la saisie manuelle (allowInput) : quand on vide le champ au clavier,
+    // flatpickr.js déclenche `setDate("", ...)` → `clear()` sur blur, mais ne garantit pas dans
+    // tous les cas d'enchaînement d'événements (ex. blur suivi immédiatement d'un clic sur le
+    // bouton "Calculer") que son propre `onChange` remonte bien la valeur vide au FormControl —
+    // constaté en pratique : l'input affichait vide mais l'ancienne valeur partait quand même au
+    // backend. On resynchronise donc explicitement le FormControl sur ce que l'input affiche
+    // réellement à chaque perte de focus, plutôt que de dépendre uniquement du hook de flatpickr.
+    // Enregistré après flatpickr lui-même : son propre blur (qui reformate/vide l'input) s'exécute
+    // avant, donc `nativeElement.value` est déjà la valeur finale quand on la lit ici.
+    this.elementRef.nativeElement.addEventListener('blur', this.onBlur);
+
     // `writeValue` peut être appelé par Angular avant que l'instance flatpickr n'existe : on
     // rejoue la dernière valeur reçue une fois l'instance prête.
     if (this.pendingValue !== null) {
@@ -47,7 +62,20 @@ export class FlatpickrDirective implements OnInit, OnDestroy, ControlValueAccess
     }
   }
 
+  private readonly onBlur = (): void => {
+    this.onChangeFn(this.elementRef.nativeElement.value);
+    this.onTouchedFn();
+  };
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const change = changes['appFlatpickr'];
+    if (change && !change.firstChange && this.instance) {
+      this.instance.set(this.appFlatpickr);
+    }
+  }
+
   ngOnDestroy(): void {
+    this.elementRef.nativeElement.removeEventListener('blur', this.onBlur);
     this.instance?.destroy();
   }
 

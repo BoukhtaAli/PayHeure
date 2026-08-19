@@ -15,6 +15,7 @@ import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.componen
 import { HomeComponent } from './components/home/home.component';
 import { EmployeeSearchComponent } from './components/employee-search/employee-search.component';
 import { PaieCalculComponent } from './components/paie-calcul/paie-calcul.component';
+import { PaieDetailComponent } from './components/paie-detail/paie-detail.component';
 import { PointageResultComponent } from './components/pointage-result/pointage-result.component';
 import { FlatpickrDirective } from './directives/flatpickr.directive';
 import { RequestInterceptor } from './config/RequestInterceptor.service';
@@ -30,6 +31,7 @@ import { RequestInterceptor } from './config/RequestInterceptor.service';
     HomeComponent,
     EmployeeSearchComponent,
     PaieCalculComponent,
+    PaieDetailComponent,
     PointageResultComponent,
     FlatpickrDirective
   ],

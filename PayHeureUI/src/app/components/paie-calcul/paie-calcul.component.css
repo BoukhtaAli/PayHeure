@@ -30,3 +30,50 @@
 .panel.disabled {
   opacity: 0.7;
 }
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+/* Action secondaire (export) à côté du titre : contour plutôt que rempli, pour rester en retrait
+   du bouton d'action principal "Calculer" (.btn-accent, rempli). */
+.btn-outline-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-text-dark);
+}
+
+.btn-outline-accent:hover {
+  background-color: var(--color-bg);
+  border-color: var(--color-accent);
+  color: var(--color-text-dark);
+}
+
+/* Même code visuel que le tableau des sessions (pointage-result.component.css) : centré, même
+   police/poids sur les données. */
+.results-table thead {
+  background-color: var(--color-primary);
+}
+
+.results-table th,
+.results-table td {
+  text-align: center;
+}
+
+.results-table tbody td {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.results-table tbody tr:hover {
+  background-color: var(--color-bg);
+}

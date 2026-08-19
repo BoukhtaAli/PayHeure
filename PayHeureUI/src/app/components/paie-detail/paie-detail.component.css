@@ -1,0 +1,36 @@
+.paie-page {
+  padding: 40px 20px;
+}
+
+.page-title {
+  font-weight: 700;
+  color: var(--color-text-dark);
+  margin-bottom: 24px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+/* Même logique que les chevrons de la pagination : la flèche doit continuer à pointer vers le
+   "précédent" du sens de lecture, donc se retourner en arabe (RTL). */
+:host-context([dir="rtl"]) .back-link i {
+  transform: scaleX(-1);
+}

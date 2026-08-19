@@ -8,17 +8,23 @@
     <div class="col-lg-4">
       <div class="panel">
         <h2 class="panel-title">{{ 'PAIE.STEP_1' | translate }}</h2>
-        <app-employee-search (employeeSelected)="onEmployeeSelected($event)"></app-employee-search>
+        <app-employee-search [initialSelection]="selectedEmployees" [initialQuery]="initialSearchQuery"
+                             (employeesSelected)="onEmployeesSelected($event)"
+                             (queryChanged)="onQueryChanged($event)"
+                             (periodeChanged)="onSearchPeriodeChanged($event)"></app-employee-search>
       </div>
     </div>
 
     <div class="col-lg-8">
-      <div class="panel" [class.disabled]="!selectedEmployee">
+      <div class="panel" [class.disabled]="selectedEmployees.length === 0">
         <h2 class="panel-title">{{ 'PAIE.STEP_2' | translate }}</h2>
 
-        <p *ngIf="!selectedEmployee" class="text-muted">{{ 'PAIE.NO_EMPLOYEE_SELECTED' | translate }}</p>
+        <p *ngIf="selectedEmployees.length === 0" class="text-muted">{{ 'PAIE.NO_EMPLOYEE_SELECTED' | translate }}</p>
 
-        <form *ngIf="selectedEmployee" [formGroup]="form" (ngSubmit)="calculer()" class="row g-3 align-items-end">
+        <!-- align-items-start, pas -end : les messages d'erreur (hauteur variable selon les
+             champs) décaleraient sinon les colonnes vers le bas pour aligner leurs bas plutôt que
+             leurs labels. -->
+        <form *ngIf="selectedEmployees.length > 0" [formGroup]="form" (ngSubmit)="calculer()" class="row g-3 align-items-start">
           <!--
             Champs date et heure pilotés par flatpickr (calendrier/horloge dessinés par la
             librairie), pas par <input type="date"/"time"> : ces widgets natifs affichent/saisissent
@@ -31,38 +37,54 @@
           <div class="col-md-3">
             <label for="dateDebut" class="form-label">{{ 'PAIE.DATE_START' | translate }}</label>
             <input id="dateDebut" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
-                   [appFlatpickr]="dateOptions" formControlName="dateDebut">
+                   [appFlatpickr]="dateOptions"
+                   [class.is-invalid]="champErreur('dateDebut') || (form.errors?.['outsideSearchPeriode'] && form.get('dateFin')?.touched)"
+                   formControlName="dateDebut">
+            <div class="invalid-feedback" *ngIf="champErreur('dateDebut') as cle">{{ cle | translate }}</div>
           </div>
           <div class="col-md-3">
             <label for="heureDebut" class="form-label">{{ 'PAIE.TIME_START' | translate }}</label>
             <input id="heureDebut" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
-                   [appFlatpickr]="heureOptions" formControlName="heureDebut">
+                   [appFlatpickr]="heureOptions"
+                   [class.is-invalid]="champErreur('heureDebut') || (form.errors?.['outsideSearchPeriode'] && form.get('dateFin')?.touched)"
+                   formControlName="heureDebut">
+            <div class="invalid-feedback" *ngIf="champErreur('heureDebut') as cle">{{ cle | translate }}</div>
           </div>
           <div class="col-md-3">
             <label for="dateFin" class="form-label">{{ 'PAIE.DATE_END' | translate }}</label>
             <input id="dateFin" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
                    [appFlatpickr]="dateOptions"
-                   [class.is-invalid]="form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched"
+                   [class.is-invalid]="champErreur('dateFin') || ((form.errors?.['invalidPeriod'] || form.errors?.['outsideSearchPeriode']) && form.get('dateFin')?.touched)"
                    formControlName="dateFin">
+            <div class="invalid-feedback" *ngIf="champErreur('dateFin') as cle">{{ cle | translate }}</div>
           </div>
           <div class="col-md-3">
             <label for="heureFin" class="form-label">{{ 'PAIE.TIME_END' | translate }}</label>
             <input id="heureFin" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
                    [appFlatpickr]="heureOptions"
-                   [class.is-invalid]="form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched"
+                   [class.is-invalid]="champErreur('heureFin') || ((form.errors?.['invalidPeriod'] || form.errors?.['outsideSearchPeriode']) && form.get('dateFin')?.touched)"
                    formControlName="heureFin">
+            <div class="invalid-feedback" *ngIf="champErreur('heureFin') as cle">{{ cle | translate }}</div>
           </div>
 
           <div class="col-md-4">
             <label for="tauxHoraire" class="form-label">{{ 'PAIE.HOURLY_RATE' | translate }}</label>
             <input id="tauxHoraire" type="number" step="0.01" min="0.01" class="form-control"
+                   [class.is-invalid]="champErreur('tauxHoraire')"
                    formControlName="tauxHoraire" [placeholder]="'PAIE.HOURLY_RATE_PLACEHOLDER' | translate">
+            <div class="invalid-feedback" *ngIf="champErreur('tauxHoraire') as cle">{{ cle | translate }}</div>
           </div>
           <div class="col-12" *ngIf="form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched">
             <div class="alert alert-danger py-2 mb-0">{{ 'PAIE.INVALID_PERIOD' | translate }}</div>
           </div>
+          <div class="col-12" *ngIf="form.errors?.['outsideSearchPeriode'] && form.get('dateFin')?.touched">
+            <div class="alert alert-danger py-2 mb-0">{{ 'PAIE.OUTSIDE_SEARCH_PERIOD' | translate }}</div>
+          </div>
+          <!-- Pas de [disabled]="form.invalid" : sinon impossible de cliquer pour déclencher
+               markAllAsTouched() dans calculer() et révéler les erreurs ci-dessus, qui restent
+               masquées tant qu'un champ n'a pas été touché individuellement. -->
           <div class="col-12">
-            <button type="submit" class="btn btn-accent" [disabled]="form.invalid">
+            <button type="submit" class="btn btn-accent">
               <i class="fas fa-calculator" aria-hidden="true"></i>
               {{ 'PAIE.CALCULATE' | translate }}
             </button>
@@ -74,7 +96,35 @@
     </div>
   </div>
 
-  <div class="mt-4" *ngIf="result">
-    <app-pointage-result [result]="result"></app-pointage-result>
+  <!-- Uniquement les détails ici (une ligne résumé par salarié) : le clic renvoie vers le détail
+       complet (sessions, anomalies) sur /paie/detail/:employeeId, voir PaieResultsService. -->
+  <div class="panel mt-4" *ngIf="results.length > 0">
+    <div class="panel-header">
+      <h2 class="panel-title mb-0">{{ 'PAIE.RESULTS_TITLE' | translate }}</h2>
+      <button type="button" class="btn btn-outline-accent btn-sm" (click)="telechargerCsv()">
+        <i class="fas fa-download" aria-hidden="true"></i>
+        {{ 'PAIE.DOWNLOAD_CSV' | translate }}
+      </button>
+    </div>
+    <table class="table table-hover results-table">
+      <thead>
+        <tr>
+          <th>{{ 'PAIE.RESULT_EMPLOYEE' | translate }}</th>
+          <th>{{ 'PAIE.RESULT_PERIOD' | translate }}</th>
+          <th>{{ 'PAIE.RESULT_RATE' | translate }}</th>
+          <th>{{ 'PAIE.RESULT_DURATION' | translate }}</th>
+          <th>{{ 'PAIE.RESULT_TOTAL' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let result of results" class="cursor-pointer" (click)="voirDetail(result)">
+          <td>{{ result.employee.prenom }} {{ result.employee.nom }} ({{ result.employee.matricule }})</td>
+          <td dir="ltr">{{ result.dateDebut | date:'dd-MM-yyyy HH:mm' }} - {{ result.dateFin | date:'dd-MM-yyyy HH:mm' }}</td>
+          <td>{{ result.tauxHoraire | number:'1.2-2' }} {{ 'PAIE.CURRENCY' | translate }} {{ 'PAIE.PER_HOUR' | translate }}</td>
+          <td>{{ result.totalDureeFormatee }}</td>
+          <td>{{ result.montantTotal | number:'1.2-2' }} {{ 'PAIE.CURRENCY' | translate }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

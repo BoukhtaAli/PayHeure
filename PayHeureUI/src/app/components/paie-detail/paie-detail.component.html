@@ -1,0 +1,20 @@
+<div class="container paie-page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+  <!-- (click) plutôt que routerLink : ce bouton doit signaler à PaieResultsService de restaurer
+       les filtres de l'écran de calcul, contrairement à un lien de navigation classique (fil
+       d'Ariane, etc.) qui doit repartir d'un formulaire vide — voir retourVersCalcul(). -->
+  <button type="button" class="back-link" (click)="retourVersCalcul()">
+    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+    {{ 'PAIE.DETAIL_BACK' | translate }}
+  </button>
+
+  <ng-container *ngIf="result; else notFound">
+    <h1 class="page-title">{{ result.employee.prenom }} {{ result.employee.nom }} ({{ result.employee.matricule }})</h1>
+    <app-pointage-result [result]="result"></app-pointage-result>
+  </ng-container>
+
+  <ng-template #notFound>
+    <div class="alert alert-warning mt-3">{{ 'PAIE.DETAIL_NOT_FOUND' | translate }}</div>
+  </ng-template>
+</div>

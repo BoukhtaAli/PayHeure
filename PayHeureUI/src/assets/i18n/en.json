@@ -27,14 +27,15 @@
   },
   "PAIE": {
     "TITLE": "Payroll calculation",
-    "SUBTITLE": "Search for an employee, choose a period and an hourly rate to compute the amount due",
-    "STEP_1": "1. Employee",
+    "SUBTITLE": "Search for one or more employees, choose a period and an hourly rate to compute the amount due",
+    "STEP_1": "1. Employees",
     "STEP_2": "2. Period and hourly rate",
-    "SEARCH_LABEL": "Search an employee",
+    "SEARCH_PERIOD_LABEL": "Worked period",
+    "SEARCH_LABEL": "Search for employees",
     "SEARCH_PLACEHOLDER": "ID, last name or first name",
     "SEARCH_EMPTY": "No employee matches this search.",
     "SEARCH_PAGINATION": "Employee pagination",
-    "NO_EMPLOYEE_SELECTED": "First select an employee from the list on the left.",
+    "NO_EMPLOYEE_SELECTED": "Select at least one employee from the list on the left.",
     "DATE_START": "Start date",
     "TIME_START": "Start time",
     "DATE_END": "End date",
@@ -44,6 +45,11 @@
     "CALCULATE": "Calculate",
     "CALCUL_ERROR": "An error occurred during the calculation.",
     "INVALID_PERIOD": "The end date cannot be earlier than the start date.",
+    "OUTSIDE_SEARCH_PERIOD": "The calculation period must stay within the worked period entered in the employee search.",
+    "FIELD_REQUIRED": "Required field.",
+    "FIELD_INVALID_DATE": "Invalid date (dd-MM-yyyy).",
+    "FIELD_INVALID_TIME": "Invalid time (HH:mm).",
+    "FIELD_INVALID_RATE": "The rate must be strictly greater than 0.",
     "RESULT_EMPLOYEE": "Employee",
     "RESULT_PERIOD": "Period",
     "RESULT_RATE": "Hourly rate",
@@ -59,6 +65,10 @@
     "RESULT_EMPTY": "No time clock records for this period.",
     "RESULT_MINUTES": "min",
     "CURRENCY": "DH",
-    "PER_HOUR": "/ h"
+    "PER_HOUR": "/ h",
+    "RESULTS_TITLE": "Results",
+    "DETAIL_NOT_FOUND": "No result to display for this employee.",
+    "DETAIL_BACK": "Back to payroll calculation",
+    "DOWNLOAD_CSV": "Download as CSV"
   }
 }

@@ -4,6 +4,7 @@ import com.example.payheurebackend.domain.Employee;
 import com.example.payheurebackend.dto.EmployeeResponse;
 import com.example.payheurebackend.dto.EmployeeSearchCriteria;
 import com.example.payheurebackend.dto.PageResponse;
+import com.example.payheurebackend.exception.InvalidPeriodException;
 import com.example.payheurebackend.exception.ResourceNotFoundException;
 import com.example.payheurebackend.mapper.EmployeeMapper;
 import com.example.payheurebackend.repository.EmployeeRepository;
@@ -30,6 +31,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public PageResponse<EmployeeResponse> search(EmployeeSearchCriteria criteria, Pageable pageable) {
+        if (criteria.hasPeriode() && criteria.dateFin().isBefore(criteria.dateDebut())) {
+            throw new InvalidPeriodException("La date de fin ne peut pas être antérieure à la date de début");
+        }
+
         Pageable sorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), SEARCH_ORDER);
         Page<Employee> employees = employeeRepository.findAll(EmployeeSpecifications.matching(criteria), sorted);
         return PageResponse.of(employees.map(employeeMapper::toResponse));

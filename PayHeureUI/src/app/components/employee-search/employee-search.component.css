@@ -14,6 +14,52 @@
   border-color: var(--color-accent);
 }
 
+/* .matricule/.name ciblent directement ces spans (donc gagnent sur la couleur héritée du <li>) :
+   sans ce complément, leur texte resterait dans le --color-text-dark habituel, illisible sur le
+   fond brun de la ligne sélectionnée. */
+.list-group-item.active .matricule,
+.list-group-item.active .name {
+  color: #fff;
+}
+
+/* Rappel des salariés cochés, visible même quand on change de page. */
+.selected-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-primary);
+  border-radius: 20px;
+  padding: 4px 6px 4px 12px;
+  font-size: 14px;
+  color: var(--color-text-dark);
+}
+
+.chip-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.chip-remove:hover {
+  background-color: var(--color-primary);
+  color: var(--color-text-dark);
+}
+
 /* Même police/poids et centrage que le tableau des sessions (voir pointage-result.component.css),
    pour une lecture cohérente entre les deux tableaux de l'écran. Centrer laisse plus d'air entre
    la colonne matricule et le nom qu'un alignement au bord. */
