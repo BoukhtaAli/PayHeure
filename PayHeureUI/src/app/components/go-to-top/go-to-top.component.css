@@ -1,0 +1,48 @@
+.go-to-top {
+  position: fixed;
+  bottom: calc(var(--footer-height, 70px) + 15px);
+  right: 30px;
+  z-index: 999;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.4s ease;
+}
+
+.go-to-top:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.go-to-top:active {
+  transform: translateY(-1px);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .go-to-top {
+    bottom: calc(var(--footer-height, 70px) + 10px);
+    right: 20px;
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+}

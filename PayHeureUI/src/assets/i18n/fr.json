@@ -70,5 +70,8 @@
     "DETAIL_NOT_FOUND": "Aucun résultat à afficher pour ce salarié.",
     "DETAIL_BACK": "Retour au calcul de paie",
     "DOWNLOAD_CSV": "Télécharger en CSV"
+  },
+  "COMMON": {
+    "BACK_TO_TOP": "Retour en haut de la page"
   }
 }

@@ -17,6 +17,7 @@ import { EmployeeSearchComponent } from './components/employee-search/employee-s
 import { PaieCalculComponent } from './components/paie-calcul/paie-calcul.component';
 import { PaieDetailComponent } from './components/paie-detail/paie-detail.component';
 import { PointageResultComponent } from './components/pointage-result/pointage-result.component';
+import { GoToTopComponent } from './components/go-to-top/go-to-top.component';
 import { FlatpickrDirective } from './directives/flatpickr.directive';
 import { RequestInterceptor } from './config/RequestInterceptor.service';
 
@@ -33,6 +34,7 @@ import { RequestInterceptor } from './config/RequestInterceptor.service';
     PaieCalculComponent,
     PaieDetailComponent,
     PointageResultComponent,
+    GoToTopComponent,
     FlatpickrDirective
   ],
   imports: [

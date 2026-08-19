@@ -98,7 +98,7 @@
 
   <!-- Uniquement les détails ici (une ligne résumé par salarié) : le clic renvoie vers le détail
        complet (sessions, anomalies) sur /paie/detail/:employeeId, voir PaieResultsService. -->
-  <div class="panel mt-4" *ngIf="results.length > 0">
+  <div class="panel mt-4" *ngIf="results.length > 0" #resultsPanel>
     <div class="panel-header">
       <h2 class="panel-title mb-0">{{ 'PAIE.RESULTS_TITLE' | translate }}</h2>
       <button type="button" class="btn btn-outline-accent btn-sm" (click)="telechargerCsv()">

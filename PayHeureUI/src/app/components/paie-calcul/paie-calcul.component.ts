@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Options } from 'flatpickr/dist/types/options';
 import { forkJoin } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { Employee } from '../../models/Employee';
 import { PaieCalculResponse } from '../../models/PaieCalcul';
 import { EmployeeSearchPeriode } from '../../services/employee.service';
@@ -54,7 +55,7 @@ function periodValidator(group: AbstractControl): ValidationErrors | null {
   templateUrl: './paie-calcul.component.html',
   styleUrls: ['./paie-calcul.component.css']
 })
-export class PaieCalculComponent implements OnInit {
+export class PaieCalculComponent implements OnInit, AfterViewInit {
 
   readonly breadcrumbItems: BreadcrumbItem[] = [
     { labelKey: 'NAV.HOME', link: ['/home'] },
@@ -94,6 +95,16 @@ export class PaieCalculComponent implements OnInit {
    */
   searchPeriode: EmployeeSearchPeriode | null = null;
 
+  /**
+   * `true` seulement quand on arrive via le bouton "Retour" de l'écran de détail (voir
+   * ngOnInit) : sert à ngAfterViewInit pour placer la page sur les résultats déjà calculés
+   * plutôt qu'en haut du formulaire, sans quoi l'utilisateur perdrait le fil en revenant.
+   */
+  private returningFromDetail = false;
+
+  /** Cible du scroll dans `ngAfterViewInit` ; voir son commentaire. */
+  @ViewChild('resultsPanel') private resultsPanel?: ElementRef<HTMLElement>;
+
   readonly form: FormGroup = this.fb.group({
     dateDebut: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
     heureDebut: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
@@ -107,7 +118,8 @@ export class PaieCalculComponent implements OnInit {
     private readonly paieService: PaieService,
     private readonly paieResultsService: PaieResultsService,
     private readonly translate: TranslateService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly ngZone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -123,8 +135,48 @@ export class PaieCalculComponent implements OnInit {
       if (this.paieResultsService.formValue) {
         this.form.patchValue(this.paieResultsService.formValue);
       }
+      this.returningFromDetail = true;
     } else {
       this.paieResultsService.reset();
+    }
+  }
+
+  /**
+   * Au retour depuis l'écran de détail, la page doit s'ouvrir sur le tableau des résultats, pas
+   * sur le formulaire en haut de page. Défilement instantané (pas `smooth`) : contrairement au
+   * clic sur "Calculer" (voir `scrollToResults`), ce n'est pas une action déclenchée par
+   * l'utilisateur pendant qu'il regarde la page, mais un repositionnement au chargement.
+   */
+  ngAfterViewInit(): void {
+    if (this.returningFromDetail) {
+      this.returningFromDetail = false;
+      this.scrollToResults('auto');
+    }
+  }
+
+  /**
+   * Cible directement `resultsPanel` (scrollIntoView) plutôt que de calculer la hauteur totale du
+   * document et scroller tout en bas : `<app-employee-search>` relance sa recherche dans son
+   * propre `ngOnInit` (voir employee-search.component.ts, appel HTTP asynchrone), et si d'autres
+   * éléments sous le tableau (pagination, footer...) changent de hauteur après coup, un scroll
+   * basé sur la hauteur totale de la page retomberait trop court ou trop loin — cibler l'élément
+   * lui-même n'a pas ce problème.
+   *
+   * `NgZone.onStable` attend que les tâches en cours (dont l'appel HTTP ci-dessus, ou celui de
+   * `calculer()`) soient terminées avant de mesurer la position du tableau ; `isStable` évite
+   * d'attendre indéfiniment si tout était déjà résolu avant qu'on ne s'y abonne (l'événement ne
+   * se redéclenche que sur une prochaine transition instable → stable, qui pourrait ne jamais
+   * survenir). Le `requestAnimationFrame` laisse ensuite le navigateur peindre la mise en page
+   * finale avant de scroller.
+   */
+  private scrollToResults(behavior: ScrollBehavior): void {
+    const scroll = () => requestAnimationFrame(() => {
+      this.resultsPanel?.nativeElement.scrollIntoView({ block: 'end', behavior });
+    });
+    if (this.ngZone.isStable) {
+      scroll();
+    } else {
+      this.ngZone.onStable.pipe(first()).subscribe(scroll);
     }
   }
 
@@ -183,6 +235,11 @@ export class PaieCalculComponent implements OnInit {
         // Partagé avec l'écran de détail (voir PaieResultsService) : évite un rappel backend pour
         // un calcul déjà fait, puisqu'il n'y a de toute façon rien à récupérer par id côté serveur.
         this.paieResultsService.results = responses;
+        // `smooth`, contrairement au retour depuis l'écran de détail : ici l'utilisateur regarde
+        // déjà la page au moment où le tableau apparaît, un saut instantané serait déroutant.
+        if (responses.length > 0) {
+          this.scrollToResults('smooth');
+        }
       },
       error: error => {
         this.results = [];

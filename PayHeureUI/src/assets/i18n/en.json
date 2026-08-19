@@ -70,5 +70,8 @@
     "DETAIL_NOT_FOUND": "No result to display for this employee.",
     "DETAIL_BACK": "Back to payroll calculation",
     "DOWNLOAD_CSV": "Download as CSV"
+  },
+  "COMMON": {
+    "BACK_TO_TOP": "Back to top"
   }
 }

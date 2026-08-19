@@ -70,5 +70,8 @@
     "DETAIL_NOT_FOUND": "لا توجد نتيجة لعرضها لهذا الموظف.",
     "DETAIL_BACK": "العودة إلى حساب الأجر",
     "DOWNLOAD_CSV": "تنزيل CSV"
+  },
+  "COMMON": {
+    "BACK_TO_TOP": "العودة إلى الأعلى"
   }
 }
