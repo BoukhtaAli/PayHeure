@@ -4,6 +4,12 @@ export interface Pointage {
   dateHeure: string;
 }
 
+/** Requête d'ajout d'un badgeage pour un salarié. `dateHeure` au format ISO `yyyy-MM-ddTHH:mm`. */
+export interface PointageCreateRequest {
+  employeeId: number;
+  dateHeure: string;
+}
+
 /**
  * Une session de travail reconstituée à partir de deux badgeages consécutifs d'une même
  * journée (entrée, puis sortie).

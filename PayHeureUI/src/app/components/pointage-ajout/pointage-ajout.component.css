@@ -1,0 +1,67 @@
+/* Mêmes règles que paie-calcul.component.css : styles de composant, donc non partageables
+   globalement (encapsulation Angular par défaut), on les redéfinit ici à l'identique. */
+.paie-page {
+  padding: 40px 20px;
+}
+
+.page-title {
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.page-subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}
+
+.panel {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  height: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: opacity 0.2s ease;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.panel.disabled {
+  opacity: 0.7;
+}
+
+.selected-employee {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin-bottom: 20px;
+}
+
+.selected-employee i {
+  color: var(--color-accent);
+}
+
+.results-table thead {
+  background-color: var(--color-primary);
+}
+
+.results-table th,
+.results-table td {
+  text-align: center;
+}
+
+.results-table tbody td {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.results-table tbody tr:hover {
+  background-color: var(--color-bg);
+}

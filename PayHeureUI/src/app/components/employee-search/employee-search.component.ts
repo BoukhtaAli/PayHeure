@@ -38,6 +38,12 @@ export class EmployeeSearchComponent implements OnInit, OnDestroy {
   @Input() initialSelection: Employee[] = [];
   @Input() initialQuery = '';
 
+  /** Une seule sélection à la fois : en choisir un nouveau désélectionne le précédent. */
+  @Input() singleSelection = false;
+
+  /** Masque le filtre "Période travaillée", inutile pour un usage sans lien avec le calcul de paie. */
+  @Input() showPeriodeFilter = true;
+
   @Output() readonly employeesSelected = new EventEmitter<Employee[]>();
   @Output() readonly queryChanged = new EventEmitter<string>();
   @Output() readonly periodeChanged = new EventEmitter<EmployeeSearchPeriode | null>();
@@ -126,6 +132,9 @@ export class EmployeeSearchComponent implements OnInit, OnDestroy {
     if (this.selected.has(employee.id)) {
       this.selected.delete(employee.id);
     } else {
+      if (this.singleSelection) {
+        this.selected.clear();
+      }
       this.selected.set(employee.id, employee);
     }
     this.employeesSelected.emit(this.selectedEmployees);

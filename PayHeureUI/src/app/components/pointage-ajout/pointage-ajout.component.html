@@ -1,0 +1,82 @@
+<div class="container paie-page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+  <h1 class="page-title">{{ 'POINTAGE.TITLE' | translate }}</h1>
+  <p class="page-subtitle">{{ 'POINTAGE.SUBTITLE' | translate }}</p>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="panel">
+        <h2 class="panel-title">{{ 'POINTAGE.STEP_1' | translate }}</h2>
+        <app-employee-search [singleSelection]="true" [showPeriodeFilter]="false"
+                             (employeesSelected)="onEmployeeSelected($event)"></app-employee-search>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="panel" [class.disabled]="!selectedEmployee">
+        <h2 class="panel-title">{{ 'POINTAGE.STEP_2' | translate }}</h2>
+
+        <p *ngIf="!selectedEmployee" class="text-muted">{{ 'POINTAGE.NO_EMPLOYEE_SELECTED' | translate }}</p>
+
+        <ng-container *ngIf="selectedEmployee">
+          <p class="selected-employee">
+            <i class="fas fa-user" aria-hidden="true"></i>
+            {{ selectedEmployee.prenom }} {{ selectedEmployee.nom }} ({{ selectedEmployee.matricule }})
+          </p>
+
+          <!-- Mêmes widgets flatpickr que le calcul de paie (dd-MM-yyyy, HH:mm sur 24h) : voir
+               flatpickr.directive.ts pour la raison de ne pas utiliser <input type="date"/"time">. -->
+          <form [formGroup]="form" (ngSubmit)="ajouter()" class="row g-3 align-items-start">
+            <div class="col-md-6">
+              <label for="date" class="form-label">{{ 'POINTAGE.DATE' | translate }}</label>
+              <input id="date" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
+                     [appFlatpickr]="dateOptions"
+                     [class.is-invalid]="champErreur('date')"
+                     formControlName="date">
+              <div class="invalid-feedback" *ngIf="champErreur('date') as cle">{{ cle | translate }}</div>
+            </div>
+            <div class="col-md-6">
+              <label for="heure" class="form-label">{{ 'POINTAGE.TIME' | translate }}</label>
+              <input id="heure" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
+                     [appFlatpickr]="heureOptions"
+                     [class.is-invalid]="champErreur('heure')"
+                     formControlName="heure">
+              <div class="invalid-feedback" *ngIf="champErreur('heure') as cle">{{ cle | translate }}</div>
+            </div>
+
+            <!-- Pas de [disabled]="form.invalid" : sinon impossible de cliquer pour déclencher
+                 markAllAsTouched() dans ajouter() et révéler les erreurs ci-dessus. Désactivé
+                 seulement pendant l'envoi, pour éviter un double ajout. -->
+            <div class="col-12">
+              <button type="submit" class="btn btn-accent" [disabled]="submitting">
+                <i class="fas fa-plus" aria-hidden="true"></i>
+                {{ 'POINTAGE.ADD' | translate }}
+              </button>
+            </div>
+          </form>
+        </ng-container>
+
+        <div class="alert alert-danger mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+        <div class="mt-4" *ngIf="ajoutes.length > 0">
+          <h3 class="panel-title">{{ 'POINTAGE.ADDED_TITLE' | translate }}</h3>
+          <table class="table table-hover results-table">
+            <thead>
+              <tr>
+                <th>{{ 'POINTAGE.RESULT_COL_DATE' | translate }}</th>
+                <th>{{ 'POINTAGE.RESULT_COL_TIME' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pointage of ajoutes">
+                <td dir="ltr">{{ pointage.dateHeure | date:'dd-MM-yyyy' }}</td>
+                <td dir="ltr">{{ pointage.dateHeure | date:'HH:mm' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

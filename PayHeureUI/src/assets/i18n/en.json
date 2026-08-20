@@ -1,6 +1,7 @@
 {
   "NAV": {
     "HOME": "Home",
+    "POINTAGE": "Time clock",
     "PAIE": "Payroll",
     "TOGGLE": "Toggle navigation"
   },
@@ -70,6 +71,23 @@
     "DETAIL_NOT_FOUND": "No result to display for this employee.",
     "DETAIL_BACK": "Back to payroll calculation",
     "DOWNLOAD_CSV": "Download as CSV"
+  },
+  "POINTAGE": {
+    "TITLE": "Add a time clock record",
+    "SUBTITLE": "Search for an employee, then enter the date and time of the punch to record",
+    "STEP_1": "1. Employee",
+    "STEP_2": "2. Punch date and time",
+    "NO_EMPLOYEE_SELECTED": "Select an employee from the list on the left.",
+    "DATE": "Date",
+    "TIME": "Time",
+    "ADD": "Add the record",
+    "SAVE_ERROR": "An error occurred while adding the record.",
+    "FIELD_REQUIRED": "Required field.",
+    "FIELD_INVALID_DATE": "Invalid date (dd-MM-yyyy).",
+    "FIELD_INVALID_TIME": "Invalid time (HH:mm).",
+    "ADDED_TITLE": "Added records",
+    "RESULT_COL_DATE": "Date",
+    "RESULT_COL_TIME": "Time"
   },
   "COMMON": {
     "BACK_TO_TOP": "Back to top"

@@ -1,6 +1,7 @@
 {
   "NAV": {
     "HOME": "Accueil",
+    "POINTAGE": "Pointage",
     "PAIE": "Calcul de paie",
     "TOGGLE": "Ouvrir/fermer la navigation"
   },
@@ -70,6 +71,23 @@
     "DETAIL_NOT_FOUND": "Aucun résultat à afficher pour ce salarié.",
     "DETAIL_BACK": "Retour au calcul de paie",
     "DOWNLOAD_CSV": "Télécharger en CSV"
+  },
+  "POINTAGE": {
+    "TITLE": "Ajout d'un pointage",
+    "SUBTITLE": "Recherchez un salarié puis saisissez la date et l'heure du badgeage à enregistrer",
+    "STEP_1": "1. Salarié",
+    "STEP_2": "2. Date et heure du badgeage",
+    "NO_EMPLOYEE_SELECTED": "Sélectionnez un salarié dans la liste de gauche.",
+    "DATE": "Date",
+    "TIME": "Heure",
+    "ADD": "Ajouter le pointage",
+    "SAVE_ERROR": "Une erreur est survenue lors de l'ajout du pointage.",
+    "FIELD_REQUIRED": "Champ obligatoire.",
+    "FIELD_INVALID_DATE": "Date invalide (dd-MM-yyyy).",
+    "FIELD_INVALID_TIME": "Heure invalide (HH:mm).",
+    "ADDED_TITLE": "Pointages ajoutés",
+    "RESULT_COL_DATE": "Date",
+    "RESULT_COL_TIME": "Heure"
   },
   "COMMON": {
     "BACK_TO_TOP": "Retour en haut de la page"

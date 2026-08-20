@@ -1,12 +1,14 @@
 <div class="employee-search">
   <!-- Filtre période avant le filtre texte : ne renvoie que les salariés ayant travaillé entre
        ces deux dates, matricule/nom/prénom en plus si renseigné juste en dessous. -->
-  <label for="employeePeriode" class="form-label fw-semibold">{{ 'PAIE.SEARCH_PERIOD_LABEL' | translate }}</label>
-  <div class="input-group mb-3">
-    <span class="input-group-text"><i class="fas fa-calendar-days" aria-hidden="true"></i></span>
-    <input id="employeePeriode" type="text" placeholder="dd-MM-yyyy — dd-MM-yyyy" dir="ltr"
-           class="form-control" [appFlatpickr]="periodeOptions" [formControl]="periodeControl">
-  </div>
+  <ng-container *ngIf="showPeriodeFilter">
+    <label for="employeePeriode" class="form-label fw-semibold">{{ 'PAIE.SEARCH_PERIOD_LABEL' | translate }}</label>
+    <div class="input-group mb-3">
+      <span class="input-group-text"><i class="fas fa-calendar-days" aria-hidden="true"></i></span>
+      <input id="employeePeriode" type="text" placeholder="dd-MM-yyyy — dd-MM-yyyy" dir="ltr"
+             class="form-control" [appFlatpickr]="periodeOptions" [formControl]="periodeControl">
+    </div>
+  </ng-container>
 
   <label for="employeeQuery" class="form-label fw-semibold">{{ 'PAIE.SEARCH_LABEL' | translate }}</label>
   <div class="input-group mb-3">
