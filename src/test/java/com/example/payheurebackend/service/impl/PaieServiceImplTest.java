@@ -97,7 +97,8 @@ class PaieServiceImplTest {
                 pointage(AMEL, LocalDateTime.of(2026, 1, 5, 12, 0)));
 
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(AMEL));
-        when(pointageRepository.findByEmployeeIdAndDateHeureBetweenOrderByDateHeureAsc(1L, debut, fin)).thenReturn(pointages);
+        when(pointageRepository.findByEmployeeIdAndDateHeureBetweenOrderByDateHeureAsc(
+                anyLong(), any(), any())).thenReturn(pointages);
 
         PaieCalculResponse response = service.calculer(new PaieCalculRequest(1L, debut, fin, new BigDecimal("10.00")));
 
@@ -154,6 +155,40 @@ class PaieServiceImplTest {
         assertThat(response.totalMinutes()).isEqualTo(240 + 240);
         assertThat(response.totalDureeFormatee()).isEqualTo("8h 00min");
         assertThat(response.montantTotal()).isEqualByComparingTo("160.00");
+    }
+
+    @Test
+    void calculer_fenetreCoupantUneSession_neCompteQueLaPortionChevauchante() {
+        // Reproduit le bug signalé : filtre 8h-10h alors que le salarié a badgé entrée 9h / sortie
+        // 12h. Le badgeage de sortie (12h) tombe hors de la fenêtre demandée mais doit quand même
+        // être apparié avec l'entrée (9h) pour ne pas être signalé à tort comme anomalie à 0h ;
+        // seule la portion 9h-10h qui chevauche la fenêtre doit être comptée dans le total.
+        LocalDateTime fenetreDebut = LocalDateTime.of(2026, 8, 26, 8, 0);
+        LocalDateTime fenetreFin = LocalDateTime.of(2026, 8, 26, 10, 0);
+        List<Pointage> pointagesJournee = List.of(
+                pointage(AMEL, LocalDateTime.of(2026, 8, 26, 9, 0)),
+                pointage(AMEL, LocalDateTime.of(2026, 8, 26, 12, 0)));
+
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(AMEL));
+        when(pointageRepository.findByEmployeeIdAndDateHeureBetweenOrderByDateHeureAsc(
+                        1L,
+                        LocalDateTime.of(2026, 8, 26, 0, 0),
+                        LocalDateTime.of(2026, 8, 26, 23, 59, 59, 999_999_999)))
+                .thenReturn(pointagesJournee);
+
+        PaieCalculResponse response = service.calculer(
+                new PaieCalculRequest(1L, fenetreDebut, fenetreFin, new BigDecimal("10.00")));
+
+        assertThat(response.pointages()).hasSize(1); // seul le badgeage de 9h est dans la fenêtre demandée
+        assertThat(response.sessions()).hasSize(1);
+        PointageSessionResponse session = response.sessions().get(0);
+        assertThat(session.anomalie()).isFalse();
+        assertThat(session.heureEntree()).isEqualTo(LocalDateTime.of(2026, 8, 26, 9, 0));
+        assertThat(session.heureSortie()).isEqualTo(LocalDateTime.of(2026, 8, 26, 10, 0));
+        assertThat(session.dureeMinutes()).isEqualTo(60);
+        assertThat(response.totalMinutes()).isEqualTo(60);
+        assertThat(response.totalDureeFormatee()).isEqualTo("1h 00min");
+        assertThat(response.montantTotal()).isEqualByComparingTo("10.00");
     }
 
     @Test
