@@ -21,8 +21,8 @@ export class NavBarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.mainMenu.push(
       { labelKey: 'NAV.HOME', icon: 'fas fa-house', route: 'home' },
       { labelKey: 'NAV.PAIE', icon: 'fas fa-calculator', route: 'paie' },
-      { labelKey: 'NAV.POINTAGE', icon: 'fas fa-clock', route: 'pointage' },
-      { labelKey: 'NAV.ANOMALIES', icon: 'fas fa-triangle-exclamation', route: 'anomalies' });
+      { labelKey: 'NAV.ANOMALIES', icon: 'fas fa-triangle-exclamation', route: 'anomalies' },
+      { labelKey: 'NAV.POINTAGE', icon: 'fas fa-clock', route: 'pointage' });
   }
 
   get languages(): AppLanguage[] {
