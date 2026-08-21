@@ -22,7 +22,9 @@
     "FEATURE_POINTAGE_TITLE": "Fetch time clock records",
     "FEATURE_POINTAGE_TEXT": "The employee's punches are automatically paired into clock-in/clock-out sessions",
     "FEATURE_CALCUL_TITLE": "Compute the amount due",
-    "FEATURE_CALCUL_TEXT": "Enter the hourly rate, the amount is computed from the hours and minutes worked"
+    "FEATURE_CALCUL_TEXT": "Enter the hourly rate, the amount is computed from the hours and minutes worked",
+    "FEATURE_ANOMALIES_TITLE": "Spot incomplete time clock records",
+    "FEATURE_ANOMALIES_TEXT": "Find at a glance the employees with an unpaired punch (missing clock-in or clock-out) over a period"
   },
   "FOOTER": {
     "RIGHTS": "All rights reserved"
@@ -92,7 +94,7 @@
   },
   "ANOMALIES": {
     "TITLE": "Incomplete time clock records",
-    "SUBTITLE": "Choose a period to find employees with a punch missing its matching clock-out (forgotten or incomplete record).",
+    "SUBTITLE": "Choose a period to find employees with an unpaired punch (missing clock-in or clock-out, forgotten or incomplete record).",
     "DATE_START": "Start date",
     "TIME_START": "Start time",
     "DATE_END": "End date",

@@ -22,7 +22,9 @@
     "FEATURE_POINTAGE_TITLE": "Récupérer les pointages",
     "FEATURE_POINTAGE_TEXT": "Les badgeages du salarié sont automatiquement appariés en entrées/sorties",
     "FEATURE_CALCUL_TITLE": "Calculer le montant dû",
-    "FEATURE_CALCUL_TEXT": "Saisissez le taux horaire, le montant est calculé sur les heures et minutes travaillées"
+    "FEATURE_CALCUL_TEXT": "Saisissez le taux horaire, le montant est calculé sur les heures et minutes travaillées",
+    "FEATURE_ANOMALIES_TITLE": "Repérer les pointages incomplets",
+    "FEATURE_ANOMALIES_TEXT": "Retrouvez en un coup d'œil les salariés ayant un badgeage sans correspondance (entrée ou sortie) sur une période"
   },
   "FOOTER": {
     "RIGHTS": "Tous droits réservés"
@@ -92,7 +94,7 @@
   },
   "ANOMALIES": {
     "TITLE": "Pointages incomplets",
-    "SUBTITLE": "Choisissez une période pour retrouver les salariés ayant un badgeage sans sortie correspondante (pointage oublié ou incomplet).",
+    "SUBTITLE": "Choisissez une période pour retrouver les salariés ayant un badgeage sans correspondance (entrée ou sortie manquante, pointage oublié ou incomplet).",
     "DATE_START": "Date de début",
     "TIME_START": "Heure de début",
     "DATE_END": "Date de fin",
