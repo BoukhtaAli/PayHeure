@@ -25,7 +25,7 @@ export class EmployeeService {
 
   /**
    * Les salariés dont le matricule, le nom ou le prénom contient le texte recherché, restreints
-   * en plus à ceux ayant travaillé pendant `periode` si elle est fournie.
+   * en plus à ceux ayant au moins un pointage pendant `periode` si elle est fournie.
    */
   search(
     query: string,

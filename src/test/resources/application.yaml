@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    # Base H2 en mémoire, propre à chaque exécution de test : remplace la configuration MySQL de
+    # src/main/resources/application.yaml (les ressources de test priment sur celles de main sur
+    # le classpath de test). "DB_CLOSE_DELAY=-1" garde la base vivante tant que la JVM de test
+    # tourne, pour que les différentes classes de test partageant le même contexte Spring (mise en
+    # cache du contexte) voient la même base plutôt que de la voir se fermer entre deux classes.
+    url: jdbc:h2:mem:payheure-test;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      # create-drop plutôt que update : chaque run de test repart d'un schéma vierge, sans dépendre
+      # de l'état laissé par un run précédent.
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null

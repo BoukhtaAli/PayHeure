@@ -1,48 +1,46 @@
 <div class="employee-search">
-  <!-- Filtre période avant le filtre texte : ne renvoie que les salariés ayant travaillé entre
-       ces deux dates, matricule/nom/prénom en plus si renseigné juste en dessous. -->
-  <ng-container *ngIf="showPeriodeFilter">
-    <label for="employeePeriode" class="form-label fw-semibold">{{ 'PAIE.SEARCH_PERIOD_LABEL' | translate }}</label>
+  <!-- Période requise (voir requirePeriode/calculPeriode) mais pas encore choisie : rien à
+       chercher ni à afficher, on l'indique plutôt que de laisser la recherche texte et la liste
+       visibles sans effet. -->
+  <p class="text-muted mb-0" *ngIf="requirePeriode && !calculPeriode; else recherche">
+    {{ 'PAIE.CHOOSE_PERIOD_FIRST' | translate }}
+  </p>
+
+  <ng-template #recherche>
+    <label for="employeeQuery" class="form-label fw-semibold">{{ 'PAIE.SEARCH_LABEL' | translate }}</label>
     <div class="input-group mb-3">
-      <span class="input-group-text"><i class="fas fa-calendar-days" aria-hidden="true"></i></span>
-      <input id="employeePeriode" type="text" placeholder="dd-MM-yyyy — dd-MM-yyyy" dir="ltr"
-             class="form-control" [appFlatpickr]="periodeOptions" [formControl]="periodeControl">
+      <span class="input-group-text"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></span>
+      <input id="employeeQuery" type="text" class="form-control" [formControl]="searchControl"
+             [placeholder]="'PAIE.SEARCH_PLACEHOLDER' | translate">
     </div>
-  </ng-container>
 
-  <label for="employeeQuery" class="form-label fw-semibold">{{ 'PAIE.SEARCH_LABEL' | translate }}</label>
-  <div class="input-group mb-3">
-    <span class="input-group-text"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></span>
-    <input id="employeeQuery" type="text" class="form-control" [formControl]="searchControl"
-           [placeholder]="'PAIE.SEARCH_PLACEHOLDER' | translate">
-  </div>
+    <!-- Rappel des salariés cochés, y compris ceux d'une autre page que celle affichée : sans ça,
+         une sélection faite plus tôt disparaîtrait visuellement dès qu'on change de page. -->
+    <div class="selected-chips mb-3" *ngIf="selectedEmployees.length > 0">
+      <span class="chip" *ngFor="let employee of selectedEmployees">
+        {{ employee.prenom }} {{ employee.nom }}
+        <button type="button" class="chip-remove" (click)="remove(employee)" [attr.aria-label]="employee.matricule">
+          <i class="fas fa-xmark" aria-hidden="true"></i>
+        </button>
+      </span>
+    </div>
 
-  <!-- Rappel des salariés cochés, y compris ceux d'une autre page que celle affichée : sans ça,
-       une sélection faite plus tôt disparaîtrait visuellement dès qu'on change de page. -->
-  <div class="selected-chips mb-3" *ngIf="selectedEmployees.length > 0">
-    <span class="chip" *ngFor="let employee of selectedEmployees">
-      {{ employee.prenom }} {{ employee.nom }}
-      <button type="button" class="chip-remove" (click)="remove(employee)" [attr.aria-label]="employee.matricule">
-        <i class="fas fa-xmark" aria-hidden="true"></i>
-      </button>
-    </span>
-  </div>
+    <ul class="list-group employee-list" *ngIf="employees.length > 0; else empty">
+      <li *ngFor="let employee of employees" class="list-group-item cursor-pointer"
+          [class.active]="isSelected(employee)" (click)="toggle(employee)">
+        <span class="matricule">{{ employee.matricule }}</span>
+        <span class="name">{{ employee.prenom }} {{ employee.nom }}</span>
+        <i class="fas fa-check" *ngIf="isSelected(employee)" aria-hidden="true"></i>
+      </li>
+    </ul>
 
-  <ul class="list-group employee-list" *ngIf="employees.length > 0; else empty">
-    <li *ngFor="let employee of employees" class="list-group-item cursor-pointer"
-        [class.active]="isSelected(employee)" (click)="toggle(employee)">
-      <span class="matricule">{{ employee.matricule }}</span>
-      <span class="name">{{ employee.prenom }} {{ employee.nom }}</span>
-      <i class="fas fa-check" *ngIf="isSelected(employee)" aria-hidden="true"></i>
-    </li>
-  </ul>
+    <ng-template #empty>
+      <p class="text-muted mb-0" *ngIf="searched">{{ 'PAIE.SEARCH_EMPTY' | translate }}</p>
+    </ng-template>
 
-  <ng-template #empty>
-    <p class="text-muted mb-0" *ngIf="searched">{{ 'PAIE.SEARCH_EMPTY' | translate }}</p>
+    <app-pagination [page]="page" [totalPages]="totalPages"
+                     [ariaLabel]="'PAIE.SEARCH_PAGINATION' | translate"
+                     (pageChange)="search($event)">
+    </app-pagination>
   </ng-template>
-
-  <app-pagination [page]="page" [totalPages]="totalPages"
-                   [ariaLabel]="'PAIE.SEARCH_PAGINATION' | translate"
-                   (pageChange)="search($event)">
-  </app-pagination>
 </div>

@@ -5,26 +5,17 @@
   <p class="page-subtitle">{{ 'PAIE.SUBTITLE' | translate }}</p>
 
   <div class="row g-4">
-    <div class="col-lg-4">
+    <!-- La période choisie ici détermine la liste de salariés proposée dans l'étape 2 (voir
+         PaieCalculComponent.calculPeriode) : elle vient donc en premier, colonne large pour ses 4
+         champs date/heure côte à côte. -->
+    <div class="col-lg-8">
       <div class="panel">
         <h2 class="panel-title">{{ 'PAIE.STEP_1' | translate }}</h2>
-        <app-employee-search [initialSelection]="selectedEmployees" [initialQuery]="initialSearchQuery"
-                             (employeesSelected)="onEmployeesSelected($event)"
-                             (queryChanged)="onQueryChanged($event)"
-                             (periodeChanged)="onSearchPeriodeChanged($event)"></app-employee-search>
-      </div>
-    </div>
-
-    <div class="col-lg-8">
-      <div class="panel" [class.disabled]="selectedEmployees.length === 0">
-        <h2 class="panel-title">{{ 'PAIE.STEP_2' | translate }}</h2>
-
-        <p *ngIf="selectedEmployees.length === 0" class="text-muted">{{ 'PAIE.NO_EMPLOYEE_SELECTED' | translate }}</p>
 
         <!-- align-items-start, pas -end : les messages d'erreur (hauteur variable selon les
              champs) décaleraient sinon les colonnes vers le bas pour aligner leurs bas plutôt que
              leurs labels. -->
-        <form *ngIf="selectedEmployees.length > 0" [formGroup]="form" (ngSubmit)="calculer()" class="row g-3 align-items-start">
+        <form [formGroup]="form" (ngSubmit)="calculer()" class="row g-3 align-items-start">
           <!--
             Champs date et heure pilotés par flatpickr (calendrier/horloge dessinés par la
             librairie), pas par <input type="date"/"time"> : ces widgets natifs affichent/saisissent
@@ -38,7 +29,7 @@
             <label for="dateDebut" class="form-label">{{ 'PAIE.DATE_START' | translate }}</label>
             <input id="dateDebut" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
                    [appFlatpickr]="dateOptions"
-                   [class.is-invalid]="champErreur('dateDebut') || (form.errors?.['outsideSearchPeriode'] && form.get('dateFin')?.touched)"
+                   [class.is-invalid]="champErreur('dateDebut')"
                    formControlName="dateDebut">
             <div class="invalid-feedback" *ngIf="champErreur('dateDebut') as cle">{{ cle | translate }}</div>
           </div>
@@ -46,7 +37,7 @@
             <label for="heureDebut" class="form-label">{{ 'PAIE.TIME_START' | translate }}</label>
             <input id="heureDebut" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
                    [appFlatpickr]="heureOptions"
-                   [class.is-invalid]="champErreur('heureDebut') || (form.errors?.['outsideSearchPeriode'] && form.get('dateFin')?.touched)"
+                   [class.is-invalid]="champErreur('heureDebut')"
                    formControlName="heureDebut">
             <div class="invalid-feedback" *ngIf="champErreur('heureDebut') as cle">{{ cle | translate }}</div>
           </div>
@@ -54,7 +45,7 @@
             <label for="dateFin" class="form-label">{{ 'PAIE.DATE_END' | translate }}</label>
             <input id="dateFin" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
                    [appFlatpickr]="dateOptions"
-                   [class.is-invalid]="champErreur('dateFin') || ((form.errors?.['invalidPeriod'] || form.errors?.['outsideSearchPeriode']) && form.get('dateFin')?.touched)"
+                   [class.is-invalid]="champErreur('dateFin') || (form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched)"
                    formControlName="dateFin">
             <div class="invalid-feedback" *ngIf="champErreur('dateFin') as cle">{{ cle | translate }}</div>
           </div>
@@ -62,7 +53,7 @@
             <label for="heureFin" class="form-label">{{ 'PAIE.TIME_END' | translate }}</label>
             <input id="heureFin" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
                    [appFlatpickr]="heureOptions"
-                   [class.is-invalid]="champErreur('heureFin') || ((form.errors?.['invalidPeriod'] || form.errors?.['outsideSearchPeriode']) && form.get('dateFin')?.touched)"
+                   [class.is-invalid]="champErreur('heureFin') || (form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched)"
                    formControlName="heureFin">
             <div class="invalid-feedback" *ngIf="champErreur('heureFin') as cle">{{ cle | translate }}</div>
           </div>
@@ -77,9 +68,6 @@
           <div class="col-12" *ngIf="form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched">
             <div class="alert alert-danger py-2 mb-0">{{ 'PAIE.INVALID_PERIOD' | translate }}</div>
           </div>
-          <div class="col-12" *ngIf="form.errors?.['outsideSearchPeriode'] && form.get('dateFin')?.touched">
-            <div class="alert alert-danger py-2 mb-0">{{ 'PAIE.OUTSIDE_SEARCH_PERIOD' | translate }}</div>
-          </div>
           <!-- Pas de [disabled]="form.invalid" : sinon impossible de cliquer pour déclencher
                markAllAsTouched() dans calculer() et révéler les erreurs ci-dessus, qui restent
                masquées tant qu'un champ n'a pas été touché individuellement. -->
@@ -92,6 +80,19 @@
         </form>
 
         <div class="alert alert-danger mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="panel">
+        <h2 class="panel-title">{{ 'PAIE.STEP_2' | translate }}</h2>
+
+        <p *ngIf="calculPeriode && selectedEmployees.length === 0" class="text-muted">{{ 'PAIE.ALL_EMPLOYEES_HINT' | translate }}</p>
+
+        <app-employee-search [requirePeriode]="true" [calculPeriode]="calculPeriode"
+                             [initialSelection]="selectedEmployees" [initialQuery]="initialSearchQuery"
+                             (employeesSelected)="onEmployeesSelected($event)"
+                             (queryChanged)="onQueryChanged($event)"></app-employee-search>
       </div>
     </div>
   </div>

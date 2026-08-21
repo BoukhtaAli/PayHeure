@@ -16,9 +16,3 @@ spring:
     serialization:
       write-dates-as-timestamps: false
     default-property-inclusion: non_null
-
-payheure:
-  demo:
-    # Sème quelques salariés et pointages de démonstration au premier démarrage (base vide
-    # uniquement). Mettre à false une fois une vraie bdd de pointage branchée.
-    seed-enabled: ${PAYHEURE_SEED_DEMO:true}

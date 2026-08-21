@@ -53,11 +53,6 @@ PayHeure/                       API Spring Boot (Java 17, Maven, MapStruct, JPA/
 mvnw spring-boot:run
 ```
 
-Au premier démarrage sur une base vide, `DemoDataInitializer` sème automatiquement 3 salariés
-(`E001`, `E002`, `E003`) et leurs pointages des 5 derniers jours ouvrés, dont un avec une sortie
-manquante volontaire (pour voir l'anomalie à l'écran). Désactivable avec
-`payheure.demo.seed-enabled=false` ou `PAYHEURE_SEED_DEMO=false`.
-
 L'API écoute sur `http://localhost:8080/api` :
 - `GET /api/employees?query=...&page=&size=` — recherche paginée
 - `GET /api/employees/{id}`

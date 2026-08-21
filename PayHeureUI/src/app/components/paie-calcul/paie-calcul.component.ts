@@ -1,13 +1,13 @@
-import { AfterViewInit, Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Options } from 'flatpickr/dist/types/options';
-import { forkJoin } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { Observable, Subject, forkJoin, of } from 'rxjs';
+import { first, map, switchMap, takeUntil } from 'rxjs/operators';
 import { Employee } from '../../models/Employee';
 import { PaieCalculResponse } from '../../models/PaieCalcul';
-import { EmployeeSearchPeriode } from '../../services/employee.service';
+import { EmployeeSearchPeriode, EmployeeService } from '../../services/employee.service';
 import { PaieResultsService } from '../../services/paie-results.service';
 import { PaieService } from '../../services/paie.service';
 import { DATE_PATTERN, HEURE_PATTERN, fromIsoDateTime, toIsoDateTime } from '../../utils/date-format';
@@ -46,29 +46,30 @@ function periodValidator(group: AbstractControl): ValidationErrors | null {
 }
 
 /**
- * Écran de calcul de paie : recherche d'un ou plusieurs salariés, saisie de la période et du
- * taux horaire (jamais stocké côté serveur), puis récupération des pointages et calcul du
- * montant dû pour chacun des salariés sélectionnés.
+ * Écran de calcul de paie. Ordre volontaire : la période et le taux horaire d'abord (étape 1),
+ * puisque c'est la période qui détermine ensuite la liste de salariés proposée (étape 2, voir
+ * `calculPeriode` et <app-employee-search [requirePeriode]>) — elle ne montre que ceux ayant au
+ * moins un pointage dedans. Aucun salarié coché dans cette liste ? Le calcul porte alors sur
+ * l'ensemble des salariés qu'elle propose (voir `calculer`) ; en cocher restreint le calcul à ce
+ * sous-ensemble précis, ce n'est jamais une obligation.
  */
 @Component({
   selector: 'app-paie-calcul',
   templateUrl: './paie-calcul.component.html',
   styleUrls: ['./paie-calcul.component.css']
 })
-export class PaieCalculComponent implements OnInit, AfterViewInit {
+export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  /** Nombre de salariés récupérés par page lors du calcul "tous les salariés" ; voir `salariesACalculer`. */
+  private static readonly TAILLE_PAGE_TOUS_LES_SALARIES = 100;
 
   readonly breadcrumbItems: BreadcrumbItem[] = [
     { labelKey: 'NAV.HOME', link: ['/home'] },
     { labelKey: 'NAV.PAIE' }
   ];
 
-  /**
-   * `d-m-Y` est la syntaxe de formatage propre à flatpickr (équivalent de notre `dd-MM-yyyy`).
-   * Pas `readonly` : `minDate`/`maxDate` sont recalculés et réassignés (nouvelle référence, pas
-   * mutation) dans `onSearchPeriodeChanged`, ce qui déclenche `ngOnChanges` sur la directive
-   * flatpickr — voir flatpickr.directive.ts.
-   */
-  dateOptions: Partial<Options> = {
+  /** `d-m-Y` est la syntaxe de formatage propre à flatpickr (équivalent de notre `dd-MM-yyyy`). */
+  readonly dateOptions: Partial<Options> = {
     dateFormat: 'd-m-Y'
   };
 
@@ -87,13 +88,18 @@ export class PaieCalculComponent implements OnInit, AfterViewInit {
   /** Recherche à restaurer dans <app-employee-search> ; voir ngOnInit. */
   initialSearchQuery = '';
 
+  /** Texte actuellement tapé dans la recherche de salariés ; voir `onQueryChanged` et `calculer`. */
+  private currentQuery = '';
+
   /**
-   * Période choisie dans le filtre "Période travaillée" de la recherche de salariés (voir
-   * onSearchPeriodeChanged). Contraint le calendrier (minDate/maxDate) et sert de garde-fou dans
-   * `periodeDansRechercheValidator` : la période de calcul ne doit pas dépasser la période sur
-   * laquelle les salariés ont été présélectionnés.
+   * Période du formulaire (à l'heure près), dès qu'elle est valide ; transmise à
+   * <app-employee-search> via `[calculPeriode]` pour peupler sa liste de salariés (voir le
+   * commentaire de classe). Recalculée à chaque changement du formulaire (voir ngOnInit) mais
+   * réassignée seulement quand la période obtenue diffère réellement de la précédente : sinon,
+   * une nouvelle référence à chaque frappe (y compris sur des champs sans rapport, comme le tarif
+   * horaire) redéclencherait inutilement la recherche dans le composant enfant.
    */
-  searchPeriode: EmployeeSearchPeriode | null = null;
+  calculPeriode: EmployeeSearchPeriode | null = null;
 
   /**
    * `true` seulement quand on arrive via le bouton "Retour" de l'écran de détail (voir
@@ -105,16 +111,19 @@ export class PaieCalculComponent implements OnInit, AfterViewInit {
   /** Cible du scroll dans `ngAfterViewInit` ; voir son commentaire. */
   @ViewChild('resultsPanel') private resultsPanel?: ElementRef<HTMLElement>;
 
+  private readonly destroy$ = new Subject<void>();
+
   readonly form: FormGroup = this.fb.group({
     dateDebut: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
     heureDebut: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
     dateFin: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
     heureFin: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
     tauxHoraire: [null, [Validators.required, Validators.min(0.01)]]
-  }, { validators: [periodValidator, group => this.periodeDansRechercheValidator(group)] });
+  }, { validators: [periodValidator] });
 
   constructor(
     private readonly fb: FormBuilder,
+    private readonly employeeService: EmployeeService,
     private readonly paieService: PaieService,
     private readonly paieResultsService: PaieResultsService,
     private readonly translate: TranslateService,
@@ -132,6 +141,7 @@ export class PaieCalculComponent implements OnInit, AfterViewInit {
       this.selectedEmployees = this.paieResultsService.selectedEmployees;
       this.results = this.paieResultsService.results;
       this.initialSearchQuery = this.paieResultsService.searchQuery;
+      this.currentQuery = this.paieResultsService.searchQuery;
       if (this.paieResultsService.formValue) {
         this.form.patchValue(this.paieResultsService.formValue);
       }
@@ -139,6 +149,39 @@ export class PaieCalculComponent implements OnInit, AfterViewInit {
     } else {
       this.paieResultsService.reset();
     }
+
+    // Après une éventuelle restauration ci-dessus, pour que `calculPeriode` reflète d'emblée le
+    // formulaire déjà rempli au retour de l'écran de détail plutôt que de rester à `null` jusqu'à
+    // la prochaine frappe.
+    this.updateCalculPeriode();
+    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => this.updateCalculPeriode());
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /** Voir le commentaire de `calculPeriode` ci-dessus. */
+  private updateCalculPeriode(): void {
+    const { dateDebut, heureDebut, dateFin, heureFin } = this.form.value;
+    const champsValides = DATE_PATTERN.test(dateDebut) && HEURE_PATTERN.test(heureDebut)
+      && DATE_PATTERN.test(dateFin) && HEURE_PATTERN.test(heureFin);
+    if (!champsValides) {
+      this.calculPeriode = null;
+      return;
+    }
+
+    const debut = toIsoDateTime(dateDebut, heureDebut);
+    const fin = toIsoDateTime(dateFin, heureFin);
+    if (fin < debut) {
+      this.calculPeriode = null;
+      return;
+    }
+    if (this.calculPeriode?.dateDebut === debut && this.calculPeriode?.dateFin === fin) {
+      return;
+    }
+    this.calculPeriode = { dateDebut: debut, dateFin: fin };
   }
 
   /**
@@ -188,27 +231,37 @@ export class PaieCalculComponent implements OnInit, AfterViewInit {
   }
 
   onQueryChanged(query: string): void {
+    this.currentQuery = query;
     this.paieResultsService.searchQuery = query;
   }
 
   /**
-   * Contraint le calendrier de la période de calcul à ne pas dépasser la période de recherche
-   * (nouvelle borne min/max ; l'utilisateur peut toujours dépasser en tapant au clavier, d'où
-   * `periodeDansRechercheValidator` en garde-fou). `null` quand le filtre est vidé : plus aucune
-   * contrainte, comportement d'avant cette fonctionnalité.
+   * Les salariés à calculer : ceux cochés dans la recherche s'il y en a, sinon l'ensemble des
+   * salariés ayant un pointage dans `periode` (aucun salarié coché = calcul pour tout le monde,
+   * voir le commentaire de classe). Récupère toutes les pages une à une (voir
+   * `TAILLE_PAGE_TOUS_LES_SALARIES`) : `employeeService.search` est paginé, mais ce calcul doit
+   * couvrir tous les salariés correspondants, pas seulement la première page affichée à l'écran.
    */
-  onSearchPeriodeChanged(periode: EmployeeSearchPeriode | null): void {
-    this.searchPeriode = periode;
-    this.dateOptions = {
-      dateFormat: 'd-m-Y',
-      minDate: periode ? new Date(periode.dateDebut) : undefined,
-      maxDate: periode ? new Date(periode.dateFin) : undefined
-    };
-    this.form.updateValueAndValidity();
+  private salariesACalculer(periode: EmployeeSearchPeriode): Observable<Employee[]> {
+    if (this.selectedEmployees.length > 0) {
+      return of(this.selectedEmployees);
+    }
+    return this.employeeService.search(this.currentQuery, 0, PaieCalculComponent.TAILLE_PAGE_TOUS_LES_SALARIES, periode).pipe(
+      switchMap(premierePage => {
+        if (premierePage.totalPages <= 1) {
+          return of(premierePage.content);
+        }
+        const pagesSuivantes = Array.from({ length: premierePage.totalPages - 1 }, (_, i) =>
+          this.employeeService.search(this.currentQuery, i + 1, PaieCalculComponent.TAILLE_PAGE_TOUS_LES_SALARIES, periode));
+        return forkJoin(pagesSuivantes).pipe(
+          map(pages => pages.reduce((tous, page) => tous.concat(page.content), [...premierePage.content]))
+        );
+      })
+    );
   }
 
   calculer(): void {
-    if (this.selectedEmployees.length === 0 || this.form.invalid) {
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
@@ -217,27 +270,37 @@ export class PaieCalculComponent implements OnInit, AfterViewInit {
     const { dateDebut, heureDebut, dateFin, heureFin, tauxHoraire } = this.form.value;
     const periode = {
       dateDebut: toIsoDateTime(dateDebut, heureDebut),
-      dateFin: toIsoDateTime(dateFin, heureFin),
-      tauxHoraire
+      dateFin: toIsoDateTime(dateFin, heureFin)
     };
-
-    // Même période et même tarif pour tout le monde : un appel par salarié sélectionné, en
-    // parallèle plutôt qu'en série, tous attendus avant d'afficher les résultats.
-    const calculs = this.selectedEmployees.map(employee =>
-      this.paieService.calculer({ employeeId: employee.id, ...periode }));
 
     // Filtres utilisés pour ce calcul, à restaurer si on revient sur cet écran (voir ngOnInit).
     this.paieResultsService.formValue = this.form.value;
 
-    forkJoin(calculs).subscribe({
+    this.salariesACalculer(periode).pipe(
+      // Même période et même tarif pour tout le monde : un appel par salarié, en parallèle
+      // plutôt qu'en série, tous attendus avant d'afficher les résultats.
+      switchMap(employees => employees.length === 0
+        ? of([] as PaieCalculResponse[])
+        : forkJoin(employees.map(employee =>
+            this.paieService.calculer({ employeeId: employee.id, ...periode, tauxHoraire }))))
+    ).subscribe({
       next: responses => {
-        this.results = responses;
+        // Le backend renvoie une réponse (montant à 0, aucune session) pour chaque salarié
+        // demandé, même sans le moindre pointage sur la période — nécessaire pour l'écran de
+        // détail (voir PAIE.RESULT_EMPTY), consulté salarié par salarié. Ici, sur ce tableau
+        // récapitulatif multi-salariés, ces lignes à 0 n'apportent rien : on ne garde que ceux
+        // ayant au moins un pointage dans la période choisie.
+        const avecPointage = responses.filter(result => result.pointages.length > 0);
+        this.results = avecPointage;
         // Partagé avec l'écran de détail (voir PaieResultsService) : évite un rappel backend pour
         // un calcul déjà fait, puisqu'il n'y a de toute façon rien à récupérer par id côté serveur.
-        this.paieResultsService.results = responses;
+        this.paieResultsService.results = avecPointage;
+        this.errorMessage = avecPointage.length === 0
+          ? this.translate.instant('PAIE.NO_POINTAGE_IN_PERIOD')
+          : null;
         // `smooth`, contrairement au retour depuis l'écran de détail : ici l'utilisateur regarde
         // déjà la page au moment où le tableau apparaît, un saut instantané serait déroutant.
-        if (responses.length > 0) {
+        if (avecPointage.length > 0) {
           this.scrollToResults('smooth');
         }
       },
@@ -268,30 +331,6 @@ export class PaieCalculComponent implements OnInit, AfterViewInit {
     if (control.errors['pattern']) return nomChamp.startsWith('date') ? 'PAIE.FIELD_INVALID_DATE' : 'PAIE.FIELD_INVALID_TIME';
     if (control.errors['min']) return 'PAIE.FIELD_INVALID_RATE';
     return null;
-  }
-
-  /**
-   * La période de calcul doit rester à l'intérieur de `searchPeriode` (bornes incluses) quand
-   * elle est renseignée. Les deux bornes de `searchPeriode` ont les secondes (`T00:00:00`,
-   * `T23:59:59`) alors que `toIsoDateTime` n'en a pas (`heureDebut`/`heureFin` au format `HH:mm`) :
-   * on tronque à 16 caractères des deux côtés avant de comparer, sinon une période de calcul
-   * commençant *exactement* à la borne de recherche serait à tort jugée hors limites (chaîne plus
-   * courte que la borne mais par ailleurs identique = "plus petite" lexicographiquement).
-   */
-  private periodeDansRechercheValidator(group: AbstractControl): ValidationErrors | null {
-    if (!this.searchPeriode) return null;
-
-    const { dateDebut, heureDebut, dateFin, heureFin } = group.value;
-    const champsValides = DATE_PATTERN.test(dateDebut) && HEURE_PATTERN.test(heureDebut)
-      && DATE_PATTERN.test(dateFin) && HEURE_PATTERN.test(heureFin);
-    if (!champsValides) return null;
-
-    const debut = toIsoDateTime(dateDebut, heureDebut);
-    const fin = toIsoDateTime(dateFin, heureFin);
-    const limiteDebut = this.searchPeriode.dateDebut.slice(0, 16);
-    const limiteFin = this.searchPeriode.dateFin.slice(0, 16);
-
-    return (debut < limiteDebut || fin > limiteFin) ? { outsideSearchPeriode: true } : null;
   }
 
   /**
