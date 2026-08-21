@@ -3,6 +3,7 @@
     "HOME": "الرئيسية",
     "POINTAGE": "تسجيل الحضور",
     "PAIE": "حساب الأجر",
+    "ANOMALIES": "تسجيلات غير مكتملة",
     "TOGGLE": "فتح/إغلاق التنقل"
   },
   "LANG": {
@@ -88,6 +89,27 @@
     "ADDED_TITLE": "التسجيلات المضافة",
     "RESULT_COL_DATE": "التاريخ",
     "RESULT_COL_TIME": "الوقت"
+  },
+  "ANOMALIES": {
+    "TITLE": "تسجيلات حضور غير مكتملة",
+    "SUBTITLE": "اختر فترة للعثور على الموظفين الذين لديهم تسجيل دخول بدون تسجيل خروج مطابق (تسجيل منسي أو غير مكتمل).",
+    "DATE_START": "تاريخ البداية",
+    "TIME_START": "وقت البداية",
+    "DATE_END": "تاريخ النهاية",
+    "TIME_END": "وقت النهاية",
+    "SEARCH": "بحث",
+    "SEARCH_ERROR": "حدث خطأ أثناء البحث.",
+    "INVALID_PERIOD": "لا يمكن أن يكون تاريخ النهاية سابقا لتاريخ البداية.",
+    "FIELD_REQUIRED": "حقل إلزامي.",
+    "FIELD_INVALID_DATE": "تاريخ غير صالح (dd-MM-yyyy).",
+    "FIELD_INVALID_TIME": "وقت غير صالح (HH:mm).",
+    "RESULTS_TITLE": "النتائج",
+    "RESULT_COUNT": "{{count}} تسجيل (تسجيلات) غير مكتمل لدى {{employeeCount}} موظف (موظفين).",
+    "RESULT_EMPTY": "لا يوجد أي موظف لديه تسجيل حضور غير مكتمل خلال هذه الفترة.",
+    "RESULT_EMPLOYEE": "الموظف",
+    "RESULT_COL_DATE": "التاريخ",
+    "RESULT_COL_IN": "الدخول",
+    "DOWNLOAD_CSV": "تنزيل CSV"
   },
   "COMMON": {
     "BACK_TO_TOP": "العودة إلى الأعلى"

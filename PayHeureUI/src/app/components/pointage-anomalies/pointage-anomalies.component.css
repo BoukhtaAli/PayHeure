@@ -1,0 +1,89 @@
+/* Mêmes classes que paie-calcul.component.css (styles scopés par composant, non partageables
+   directement en Angular) : panneaux, tableau de résultats, bouton d'export secondaire. */
+
+.paie-page {
+  padding: 40px 20px;
+}
+
+.page-title {
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.page-subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}
+
+.panel {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.btn-outline-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-text-dark);
+}
+
+.btn-outline-accent:hover {
+  background-color: var(--color-bg);
+  border-color: var(--color-accent);
+  color: var(--color-text-dark);
+}
+
+.results-table thead {
+  background-color: var(--color-primary);
+}
+
+.results-table th,
+.results-table td {
+  text-align: center;
+}
+
+.results-table tbody td {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.results-table tbody tr:hover {
+  background-color: var(--color-bg);
+}
+
+/* Ligne dépliée sous une journée en anomalie (voir toggle()) : liste des badgeages bruts, en
+   retrait visuel du reste du tableau (police normale, non centrée, fond légèrement distinct). */
+.pointages-jour {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+  background-color: var(--color-bg);
+}
+
+.results-table .fa-chevron-down,
+.results-table .fa-chevron-up {
+  font-size: 12px;
+  margin-inline-end: 6px;
+  color: var(--color-text-muted);
+}

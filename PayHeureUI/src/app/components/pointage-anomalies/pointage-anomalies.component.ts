@@ -1,0 +1,165 @@
+import { Component } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
+import { Options } from 'flatpickr/dist/types/options';
+import { PointageAnomalieJour, PointageAnomalieResponse } from '../../models/PointageAnomalie';
+import { PointageAnomalieService } from '../../services/pointage-anomalie.service';
+import { DATE_PATTERN, HEURE_PATTERN, toIsoDateTime } from '../../utils/date-format';
+import { horodatageLocal, telechargerCsv } from '../../utils/csv';
+import { BreadcrumbItem } from '../breadcrumb/breadcrumb.component';
+
+/**
+ * La comparaison se fait en chaîne (pas `new Date(...)`) : une fois convertie en
+ * `yyyy-MM-ddTHH:mm`, zéro-paddée, l'ordre lexical suit exactement l'ordre chronologique, sans
+ * les pièges de fuseau horaire d'un parsing `Date`. Même validateur que l'écran de calcul de
+ * paie (voir paie-calcul.component.ts), dupliqué ici faute d'un module de formulaires partagé.
+ */
+function periodValidator(group: AbstractControl): ValidationErrors | null {
+  const { dateDebut, heureDebut, dateFin, heureFin } = group.value;
+  const champsValides = DATE_PATTERN.test(dateDebut) && HEURE_PATTERN.test(heureDebut)
+    && DATE_PATTERN.test(dateFin) && HEURE_PATTERN.test(heureFin);
+  if (!champsValides) return null;
+
+  const debut = toIsoDateTime(dateDebut, heureDebut);
+  const fin = toIsoDateTime(dateFin, heureFin);
+  return fin < debut ? { invalidPeriod: true } : null;
+}
+
+/**
+ * Écran de recherche des pointages incomplets ou oubliés : contrairement au calcul de paie, il
+ * ne porte pas sur un ou plusieurs salariés choisis au préalable, mais balaie d'emblée l'ensemble
+ * des salariés actifs sur la période demandée (voir PointageAnomalieService, un seul appel
+ * serveur) pour n'afficher que ceux ayant au moins un badgeage sans sortie correspondante.
+ */
+@Component({
+  selector: 'app-pointage-anomalies',
+  templateUrl: './pointage-anomalies.component.html',
+  styleUrls: ['./pointage-anomalies.component.css']
+})
+export class PointageAnomaliesComponent {
+
+  readonly breadcrumbItems: BreadcrumbItem[] = [
+    { labelKey: 'NAV.HOME', link: ['/home'] },
+    { labelKey: 'NAV.ANOMALIES' }
+  ];
+
+  /** `d-m-Y` est la syntaxe de formatage propre à flatpickr (équivalent de notre `dd-MM-yyyy`). */
+  readonly dateOptions: Partial<Options> = {
+    dateFormat: 'd-m-Y'
+  };
+
+  /** `noCalendar` + `time_24hr` : horloge seule, toujours en 24h, jamais de calendrier ni d'AM/PM. */
+  readonly heureOptions: Partial<Options> = {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: 'H:i',
+    time_24hr: true
+  };
+
+  results: PointageAnomalieResponse[] = [];
+  searched = false;
+  errorMessage: string | null = null;
+
+  /**
+   * Clé (`employeeId-date`) de la seule ligne actuellement dépliée, ou `null` si aucune : voir
+   * `toggle`/`estDeplie`. Un seul champ plutôt qu'une `Set` — en ouvrir une referme les autres
+   * (comportement accordéon), pas d'affichage simultané de plusieurs détails.
+   */
+  private deplie: string | null = null;
+
+  readonly form: FormGroup = this.fb.group({
+    dateDebut: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
+    heureDebut: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
+    dateFin: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
+    heureFin: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]]
+  }, { validators: [periodValidator] });
+
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly pointageAnomalieService: PointageAnomalieService,
+    private readonly translate: TranslateService
+  ) {}
+
+  /** Nombre total d'anomalies tous salariés confondus, affiché dans le titre des résultats. */
+  get totalAnomalies(): number {
+    return this.results.reduce((total, result) => total + result.anomalies.length, 0);
+  }
+
+  rechercher(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.errorMessage = null;
+    const { dateDebut, heureDebut, dateFin, heureFin } = this.form.value;
+
+    this.pointageAnomalieService.lister({
+      dateDebut: toIsoDateTime(dateDebut, heureDebut),
+      dateFin: toIsoDateTime(dateFin, heureFin)
+    }).subscribe({
+      next: results => {
+        this.results = results;
+        this.searched = true;
+        this.deplie = null;
+      },
+      error: error => {
+        this.results = [];
+        this.searched = true;
+        // Le backend ne répond qu'en français (voir GlobalExceptionHandler) et ce message n'est
+        // pas traduit, contrairement au reste de l'écran. Le seul cas facilement prévisible
+        // (période invalide) est intercepté avant l'appel par `periodValidator` ; ce message
+        // générique ne sert plus que pour les erreurs réellement inattendues côté serveur.
+        this.errorMessage = error?.error?.message ?? this.translate.instant('ANOMALIES.SEARCH_ERROR');
+      }
+    });
+  }
+
+  private cle(result: PointageAnomalieResponse, jour: PointageAnomalieJour): string {
+    return `${result.employee.id}-${jour.date}`;
+  }
+
+  /**
+   * Affiche le détail des badgeages bruts de cette journée, en repliant l'éventuelle autre ligne
+   * déjà ouverte (une seule ligne dépliée à la fois, voir `deplie`).
+   */
+  toggle(result: PointageAnomalieResponse, jour: PointageAnomalieJour): void {
+    const cle = this.cle(result, jour);
+    this.deplie = this.deplie === cle ? null : cle;
+  }
+
+  estDeplie(result: PointageAnomalieResponse, jour: PointageAnomalieJour): boolean {
+    return this.deplie === this.cle(result, jour);
+  }
+
+  /**
+   * Clé i18n à afficher sous un champ, ou `null` s'il n'y a rien à signaler. `rechercher()`
+   * appelle `markAllAsTouched()` au clic sur "Rechercher" : les erreurs apparaissent donc dès ce
+   * clic, sans avoir à toucher/quitter chaque champ un par un au préalable.
+   */
+  champErreur(nomChamp: string): string | null {
+    const control = this.form.get(nomChamp);
+    if (!control?.touched || !control.errors) return null;
+    if (control.errors['required']) return 'ANOMALIES.FIELD_REQUIRED';
+    if (control.errors['pattern']) return nomChamp.startsWith('date') ? 'ANOMALIES.FIELD_INVALID_DATE' : 'ANOMALIES.FIELD_INVALID_TIME';
+    return null;
+  }
+
+  /**
+   * Exporte la liste affichée, une ligne par badgeage brut d'une journée en anomalie (le détail
+   * visible au clic sur une ligne, voir `toggle`) : les résultats sont déjà en mémoire côté
+   * client, pas d'appel serveur pour ça, juste la construction du fichier et son téléchargement.
+   */
+  telechargerCsv(): void {
+    const entetes = ['RESULT_EMPLOYEE', 'RESULT_COL_DATE', 'RESULT_COL_IN']
+      .map(cle => this.translate.instant(`ANOMALIES.${cle}`));
+
+    const lignes = this.results.flatMap(result => result.anomalies.flatMap(jour => jour.pointages.map(pointage => [
+      `${result.employee.prenom} ${result.employee.nom} (${result.employee.matricule})`,
+      new Date(pointage.dateHeure).toLocaleDateString('fr-FR'),
+      new Date(pointage.dateHeure).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    ])));
+
+    telechargerCsv(`anomalies-pointage-${horodatageLocal(new Date())}.csv`, entetes, lignes);
+  }
+}

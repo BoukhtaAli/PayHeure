@@ -3,6 +3,7 @@
     "HOME": "Home",
     "POINTAGE": "Time clock",
     "PAIE": "Payroll",
+    "ANOMALIES": "Incomplete records",
     "TOGGLE": "Toggle navigation"
   },
   "LANG": {
@@ -88,6 +89,27 @@
     "ADDED_TITLE": "Added records",
     "RESULT_COL_DATE": "Date",
     "RESULT_COL_TIME": "Time"
+  },
+  "ANOMALIES": {
+    "TITLE": "Incomplete time clock records",
+    "SUBTITLE": "Choose a period to find employees with a punch missing its matching clock-out (forgotten or incomplete record).",
+    "DATE_START": "Start date",
+    "TIME_START": "Start time",
+    "DATE_END": "End date",
+    "TIME_END": "End time",
+    "SEARCH": "Search",
+    "SEARCH_ERROR": "An error occurred during the search.",
+    "INVALID_PERIOD": "The end date cannot be earlier than the start date.",
+    "FIELD_REQUIRED": "Required field.",
+    "FIELD_INVALID_DATE": "Invalid date (dd-MM-yyyy).",
+    "FIELD_INVALID_TIME": "Invalid time (HH:mm).",
+    "RESULTS_TITLE": "Results",
+    "RESULT_COUNT": "{{count}} incomplete record(s) across {{employeeCount}} employee(s).",
+    "RESULT_EMPTY": "No employee has an incomplete time clock record for this period.",
+    "RESULT_EMPLOYEE": "Employee",
+    "RESULT_COL_DATE": "Date",
+    "RESULT_COL_IN": "Clock in",
+    "DOWNLOAD_CSV": "Download as CSV"
   },
   "COMMON": {
     "BACK_TO_TOP": "Back to top"

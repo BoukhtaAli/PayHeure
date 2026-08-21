@@ -11,23 +11,8 @@ import { EmployeeSearchPeriode, EmployeeService } from '../../services/employee.
 import { PaieResultsService } from '../../services/paie-results.service';
 import { PaieService } from '../../services/paie.service';
 import { DATE_PATTERN, HEURE_PATTERN, fromIsoDateTime, toIsoDateTime } from '../../utils/date-format';
+import { horodatageLocal, telechargerCsv } from '../../utils/csv';
 import { BreadcrumbItem } from '../breadcrumb/breadcrumb.component';
-
-/** Échappe un champ CSV : entre guillemets, guillemets internes doublés (RFC 4180). */
-function champCsv(valeur: string): string {
-  return `"${valeur.replace(/"/g, '""')}"`;
-}
-
-/**
- * `yyyy-MM-dd-HH-mm-ss` en heure locale du navigateur — pas `Date.toISOString()`, qui est
- * toujours en UTC et afficherait donc une heure différente de celle de l'utilisateur.
- */
-function horodatageLocal(date: Date): string {
-  const deuxChiffres = (n: number) => n.toString().padStart(2, '0');
-  return [date.getFullYear(), deuxChiffres(date.getMonth() + 1), deuxChiffres(date.getDate()),
-    deuxChiffres(date.getHours()), deuxChiffres(date.getMinutes()), deuxChiffres(date.getSeconds())]
-    .join('-');
-}
 
 /**
  * La comparaison se fait en chaîne (pas `new Date(...)`) : une fois convertie en
@@ -352,23 +337,8 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
       `${result.montantTotal.toFixed(2)} ${devise}`
     ]);
 
-    // Séparateur `;` plutôt que `,` : convention des CSV en locale française (Excel FR utilise
-    // la virgule comme séparateur décimal, donc `,` comme délimiteur de colonnes casse l'import).
-    const csv = [entetes, ...lignes]
-      .map(ligne => ligne.map(champCsv).join(';'))
-      .join('\r\n');
-
-    // BOM UTF-8 en préfixe (U+FEFF, code explicite pour éviter un caractère invisible dans la
-    // source) : sans lui, Excel interprète les accents (salarié, prénom...) de travers.
-    const bom = String.fromCharCode(0xFEFF);
-    const blob = new Blob([bom + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const lien = document.createElement('a');
-    lien.href = url;
-    // Minutes et secondes incluses (pas seulement la date) : deux exports le même jour ne
-    // s'écrasent pas l'un l'autre.
-    lien.download = `paie-${horodatageLocal(new Date())}.csv`;
-    lien.click();
-    URL.revokeObjectURL(url);
+    // Minutes et secondes incluses dans le nom de fichier (pas seulement la date) : deux exports
+    // le même jour ne s'écrasent pas l'un l'autre.
+    telechargerCsv(`paie-${horodatageLocal(new Date())}.csv`, entetes, lignes);
   }
 }

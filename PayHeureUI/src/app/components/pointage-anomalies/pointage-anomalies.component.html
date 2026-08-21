@@ -1,0 +1,109 @@
+<div class="container paie-page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+  <h1 class="page-title">{{ 'ANOMALIES.TITLE' | translate }}</h1>
+  <p class="page-subtitle">{{ 'ANOMALIES.SUBTITLE' | translate }}</p>
+
+  <div class="panel">
+    <!-- Mêmes widgets flatpickr que le calcul de paie (dd-MM-yyyy, HH:mm sur 24h) : voir
+         flatpickr.directive.ts pour la raison de ne pas utiliser <input type="date"/"time">. -->
+    <form [formGroup]="form" (ngSubmit)="rechercher()" class="row g-3 align-items-start">
+      <div class="col-md-3">
+        <label for="dateDebut" class="form-label">{{ 'ANOMALIES.DATE_START' | translate }}</label>
+        <input id="dateDebut" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
+               [appFlatpickr]="dateOptions"
+               [class.is-invalid]="champErreur('dateDebut')"
+               formControlName="dateDebut">
+        <div class="invalid-feedback" *ngIf="champErreur('dateDebut') as cle">{{ cle | translate }}</div>
+      </div>
+      <div class="col-md-3">
+        <label for="heureDebut" class="form-label">{{ 'ANOMALIES.TIME_START' | translate }}</label>
+        <input id="heureDebut" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
+               [appFlatpickr]="heureOptions"
+               [class.is-invalid]="champErreur('heureDebut')"
+               formControlName="heureDebut">
+        <div class="invalid-feedback" *ngIf="champErreur('heureDebut') as cle">{{ cle | translate }}</div>
+      </div>
+      <div class="col-md-3">
+        <label for="dateFin" class="form-label">{{ 'ANOMALIES.DATE_END' | translate }}</label>
+        <input id="dateFin" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
+               [appFlatpickr]="dateOptions"
+               [class.is-invalid]="champErreur('dateFin') || (form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched)"
+               formControlName="dateFin">
+        <div class="invalid-feedback" *ngIf="champErreur('dateFin') as cle">{{ cle | translate }}</div>
+      </div>
+      <div class="col-md-3">
+        <label for="heureFin" class="form-label">{{ 'ANOMALIES.TIME_END' | translate }}</label>
+        <input id="heureFin" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
+               [appFlatpickr]="heureOptions"
+               [class.is-invalid]="champErreur('heureFin') || (form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched)"
+               formControlName="heureFin">
+        <div class="invalid-feedback" *ngIf="champErreur('heureFin') as cle">{{ cle | translate }}</div>
+      </div>
+
+      <div class="col-12" *ngIf="form.errors?.['invalidPeriod'] && form.get('dateFin')?.touched">
+        <div class="alert alert-danger py-2 mb-0">{{ 'ANOMALIES.INVALID_PERIOD' | translate }}</div>
+      </div>
+
+      <!-- Pas de [disabled]="form.invalid" : sinon impossible de cliquer pour déclencher
+           markAllAsTouched() dans rechercher() et révéler les erreurs ci-dessus. -->
+      <div class="col-12">
+        <button type="submit" class="btn btn-accent">
+          <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+          {{ 'ANOMALIES.SEARCH' | translate }}
+        </button>
+      </div>
+    </form>
+
+    <div class="alert alert-danger mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+  </div>
+
+  <div class="panel mt-4" *ngIf="searched">
+    <div class="panel-header">
+      <h2 class="panel-title mb-0">{{ 'ANOMALIES.RESULTS_TITLE' | translate }}</h2>
+      <button type="button" class="btn btn-outline-accent btn-sm" *ngIf="results.length > 0" (click)="telechargerCsv()">
+        <i class="fas fa-download" aria-hidden="true"></i>
+        {{ 'ANOMALIES.DOWNLOAD_CSV' | translate }}
+      </button>
+    </div>
+
+    <div class="alert alert-warning" *ngIf="results.length > 0">
+      <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+      {{ 'ANOMALIES.RESULT_COUNT' | translate: { count: totalAnomalies, employeeCount: results.length } }}
+    </div>
+
+    <p *ngIf="results.length === 0" class="text-muted mb-0">{{ 'ANOMALIES.RESULT_EMPTY' | translate }}</p>
+
+    <table class="table table-hover results-table" *ngIf="results.length > 0">
+      <thead>
+        <tr>
+          <th>{{ 'ANOMALIES.RESULT_EMPLOYEE' | translate }}</th>
+          <th>{{ 'ANOMALIES.RESULT_COL_DATE' | translate }}</th>
+        </tr>
+      </thead>
+      <!-- Une ligne par journée en anomalie, pas par salarié : un salarié avec plusieurs journées
+           incomplètes sur la période apparaît donc sur plusieurs lignes. Le clic déplie une ligne
+           supplémentaire listant les badgeages bruts de cette journée (voir `toggle`). -->
+      <tbody>
+        <ng-container *ngFor="let result of results">
+          <ng-container *ngFor="let jour of result.anomalies">
+            <tr class="table-warning cursor-pointer" (click)="toggle(result, jour)">
+              <td>{{ result.employee.prenom }} {{ result.employee.nom }} ({{ result.employee.matricule }})</td>
+              <td dir="ltr">
+                <i class="fas" [ngClass]="estDeplie(result, jour) ? 'fa-chevron-up' : 'fa-chevron-down'" aria-hidden="true"></i>
+                {{ jour.date | date:'dd-MM-yyyy' }}
+              </td>
+            </tr>
+            <tr *ngIf="estDeplie(result, jour)">
+              <td colspan="2" class="pointages-jour">
+                <span *ngFor="let pointage of jour.pointages; let last = last" dir="ltr">
+                  {{ pointage.dateHeure | date:'HH:mm' }}<ng-container *ngIf="!last">, </ng-container>
+                </span>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+</div>

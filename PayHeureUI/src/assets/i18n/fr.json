@@ -3,6 +3,7 @@
     "HOME": "Accueil",
     "POINTAGE": "Pointage",
     "PAIE": "Calcul de paie",
+    "ANOMALIES": "Pointages incomplets",
     "TOGGLE": "Ouvrir/fermer la navigation"
   },
   "LANG": {
@@ -88,6 +89,27 @@
     "ADDED_TITLE": "Pointages ajoutés",
     "RESULT_COL_DATE": "Date",
     "RESULT_COL_TIME": "Heure"
+  },
+  "ANOMALIES": {
+    "TITLE": "Pointages incomplets",
+    "SUBTITLE": "Choisissez une période pour retrouver les salariés ayant un badgeage sans sortie correspondante (pointage oublié ou incomplet).",
+    "DATE_START": "Date de début",
+    "TIME_START": "Heure de début",
+    "DATE_END": "Date de fin",
+    "TIME_END": "Heure de fin",
+    "SEARCH": "Rechercher",
+    "SEARCH_ERROR": "Une erreur est survenue lors de la recherche.",
+    "INVALID_PERIOD": "La date de fin ne peut pas être antérieure à la date de début.",
+    "FIELD_REQUIRED": "Champ obligatoire.",
+    "FIELD_INVALID_DATE": "Date invalide (dd-MM-yyyy).",
+    "FIELD_INVALID_TIME": "Heure invalide (HH:mm).",
+    "RESULTS_TITLE": "Résultats",
+    "RESULT_COUNT": "{{count}} pointage(s) incomplet(s) chez {{employeeCount}} salarié(s).",
+    "RESULT_EMPTY": "Aucun salarié n'a de pointage incomplet sur cette période.",
+    "RESULT_EMPLOYEE": "Salarié",
+    "RESULT_COL_DATE": "Date",
+    "RESULT_COL_IN": "Entrée",
+    "DOWNLOAD_CSV": "Télécharger en CSV"
   },
   "COMMON": {
     "BACK_TO_TOP": "Retour en haut de la page"

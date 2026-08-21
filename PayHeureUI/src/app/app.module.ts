@@ -18,6 +18,7 @@ import { PaieCalculComponent } from './components/paie-calcul/paie-calcul.compon
 import { PaieDetailComponent } from './components/paie-detail/paie-detail.component';
 import { PointageResultComponent } from './components/pointage-result/pointage-result.component';
 import { PointageAjoutComponent } from './components/pointage-ajout/pointage-ajout.component';
+import { PointageAnomaliesComponent } from './components/pointage-anomalies/pointage-anomalies.component';
 import { GoToTopComponent } from './components/go-to-top/go-to-top.component';
 import { FlatpickrDirective } from './directives/flatpickr.directive';
 import { RequestInterceptor } from './config/RequestInterceptor.service';
@@ -36,6 +37,7 @@ import { RequestInterceptor } from './config/RequestInterceptor.service';
     PaieDetailComponent,
     PointageResultComponent,
     PointageAjoutComponent,
+    PointageAnomaliesComponent,
     GoToTopComponent,
     FlatpickrDirective
   ],

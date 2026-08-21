@@ -43,7 +43,8 @@ class PaieServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new PaieServiceImpl(employeeRepository, pointageRepository, new EmployeeMapperImpl(), new PointageMapperImpl());
+        service = new PaieServiceImpl(employeeRepository, pointageRepository, new EmployeeMapperImpl(), new PointageMapperImpl(),
+                new PointageSessionAssembler());
     }
 
     private static final Employee AMEL = Employee.builder().id(1L).matricule("E001").nom("Boukhta").prenom("Amel").build();
