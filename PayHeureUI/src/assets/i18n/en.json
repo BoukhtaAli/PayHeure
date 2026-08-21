@@ -108,7 +108,7 @@
     "RESULT_EMPTY": "No employee has an incomplete time clock record for this period.",
     "RESULT_EMPLOYEE": "Employee",
     "RESULT_COL_DATE": "Date",
-    "RESULT_COL_IN": "Clock in",
+    "RESULT_COL_ENTRIES": "Entries",
     "DOWNLOAD_CSV": "Download as CSV"
   },
   "COMMON": {

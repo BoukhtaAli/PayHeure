@@ -108,7 +108,7 @@
     "RESULT_EMPTY": "Aucun salarié n'a de pointage incomplet sur cette période.",
     "RESULT_EMPLOYEE": "Salarié",
     "RESULT_COL_DATE": "Date",
-    "RESULT_COL_IN": "Entrée",
+    "RESULT_COL_ENTRIES": "Entrées",
     "DOWNLOAD_CSV": "Télécharger en CSV"
   },
   "COMMON": {

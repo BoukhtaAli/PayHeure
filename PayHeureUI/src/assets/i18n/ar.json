@@ -108,7 +108,7 @@
     "RESULT_EMPTY": "لا يوجد أي موظف لديه تسجيل حضور غير مكتمل خلال هذه الفترة.",
     "RESULT_EMPLOYEE": "الموظف",
     "RESULT_COL_DATE": "التاريخ",
-    "RESULT_COL_IN": "الدخول",
+    "RESULT_COL_ENTRIES": "التسجيلات",
     "DOWNLOAD_CSV": "تنزيل CSV"
   },
   "COMMON": {

@@ -38,6 +38,14 @@ function periodValidator(group: AbstractControl): ValidationErrors | null {
 })
 export class PointageAnomaliesComponent {
 
+  /**
+   * Caractère séparant les heures de badgeage d'une même journée dans la colonne "entrées" du
+   * CSV exporté (voir `telechargerCsv`). Ni `;` (délimiteur de colonnes du CSV, voir
+   * `utils/csv.ts`) ni `,` (séparateur décimal en locale française), pour rester sans ambiguïté
+   * à l'ouverture dans Excel.
+   */
+  private static readonly SEPARATEUR_ENTREES = ' | ';
+
   readonly breadcrumbItems: BreadcrumbItem[] = [
     { labelKey: 'NAV.HOME', link: ['/home'] },
     { labelKey: 'NAV.ANOMALIES' }
@@ -99,7 +107,13 @@ export class PointageAnomaliesComponent {
       dateFin: toIsoDateTime(dateFin, heureFin)
     }).subscribe({
       next: results => {
-        this.results = results;
+        // Le backend renvoie les journées en anomalie par ordre chronologique (voir
+        // PointageAnomalieServiceImpl) ; on les affiche ici de la plus récente à la plus
+        // ancienne. Comparaison en chaîne (yyyy-MM-dd) : ordre lexical = ordre chronologique.
+        this.results = results.map(result => ({
+          ...result,
+          anomalies: [...result.anomalies].sort((a, b) => b.date.localeCompare(a.date))
+        }));
         this.searched = true;
         this.deplie = null;
       },
@@ -146,19 +160,23 @@ export class PointageAnomaliesComponent {
   }
 
   /**
-   * Exporte la liste affichée, une ligne par badgeage brut d'une journée en anomalie (le détail
-   * visible au clic sur une ligne, voir `toggle`) : les résultats sont déjà en mémoire côté
-   * client, pas d'appel serveur pour ça, juste la construction du fichier et son téléchargement.
+   * Exporte la liste affichée, une ligne par journée en anomalie (pas par badgeage brut) : les
+   * heures de badgeage de la journée sont regroupées dans une seule colonne, séparées par
+   * `SEPARATEUR_ENTREES` plutôt qu'une colonne par badgeage (leur nombre varie d'une journée à
+   * l'autre). Les résultats sont déjà en mémoire côté client, pas d'appel serveur pour ça, juste
+   * la construction du fichier et son téléchargement.
    */
   telechargerCsv(): void {
-    const entetes = ['RESULT_EMPLOYEE', 'RESULT_COL_DATE', 'RESULT_COL_IN']
+    const entetes = ['RESULT_EMPLOYEE', 'RESULT_COL_DATE', 'RESULT_COL_ENTRIES']
       .map(cle => this.translate.instant(`ANOMALIES.${cle}`));
 
-    const lignes = this.results.flatMap(result => result.anomalies.flatMap(jour => jour.pointages.map(pointage => [
+    const lignes = this.results.flatMap(result => result.anomalies.map(jour => [
       `${result.employee.prenom} ${result.employee.nom} (${result.employee.matricule})`,
-      new Date(pointage.dateHeure).toLocaleDateString('fr-FR'),
-      new Date(pointage.dateHeure).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-    ])));
+      new Date(jour.date).toLocaleDateString('fr-FR'),
+      jour.pointages
+        .map(pointage => new Date(pointage.dateHeure).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }))
+        .join(PointageAnomaliesComponent.SEPARATEUR_ENTREES)
+    ]));
 
     telechargerCsv(`anomalies-pointage-${horodatageLocal(new Date())}.csv`, entetes, lignes);
   }
