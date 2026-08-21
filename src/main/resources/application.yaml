@@ -2,14 +2,19 @@ spring:
   application:
     name: payheure-backend
   datasource:
-    url: jdbc:mysql://localhost:3306/payheureDb
-    username: root
+    # Adapter ce chemin à l'emplacement du fichier .accdb sur le poste client.
+    url: jdbc:ucanaccess://C:/PayHeure/payheureDb.accdb;newDatabaseVersion=V2010
+    driver-class-name: net.ucanaccess.jdbc.UcanaccessDriver
+    username:
     password:
   jpa:
     hibernate:
-      ddl-auto: update
+      # "update" n'est pas fiable avec UCanAccess (retente un CREATE TABLE à chaque démarrage).
+      # Schéma à créer une fois via le bootstrap décrit dans le README, puis laisser "none".
+      ddl-auto: none
     show-sql: false
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+    # Pas de dialecte Hibernate "Access" dédié : HSQLDialect est celui que UCanAccess recommande.
+    database-platform: org.hibernate.dialect.HSQLDialect
     # Les services renvoient des DTO : aucune donnée n'est chargée hors transaction.
     open-in-view: false
   jackson:

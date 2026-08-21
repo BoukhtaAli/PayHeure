@@ -10,7 +10,7 @@ l'écran × heures/minutes travaillées). Généré sur le même modèle que le 
 Le dépôt racine **est** le backend ; le frontend vit dedans, dans `PayHeureUI/`.
 
 ```
-PayHeure/                       API Spring Boot (Java 17, Maven, MapStruct, JPA/MySQL)
+PayHeure/                       API Spring Boot (Java 17, Maven, MapStruct, JPA/MS Access via UCanAccess)
 ├── pom.xml
 ├── src/main/java/com/example/payheurebackend/
 │   ├── domain/            Employee, Pointage (entités JPA)
@@ -44,14 +44,28 @@ PayHeure/                       API Spring Boot (Java 17, Maven, MapStruct, JPA/
 
 - JDK 17, Maven (le wrapper `mvnw`/`mvnw.cmd` est fourni, pas besoin d'installer Maven à part)
 - Node.js 18+ et npm
-- MySQL 8 (ou Docker, voir plus bas)
+- Aucun serveur de base de données à installer : UCanAccess (driver JDBC pur Java) lit/écrit
+  directement le fichier `.accdb` configuré dans `spring.datasource.url`
+  (`src/main/resources/application.yaml`), Access/Office n'a pas besoin d'être installé.
 
 ## Lancer le backend
 
 ```bash
-# Crée la base si besoin : CREATE DATABASE payheureDb;
 mvnw spring-boot:run
 ```
+
+**Premier lancement (création du schéma)** : `ddl-auto` est à `none` par défaut (voir le
+commentaire dans `application.yaml` — `update` a été testé et n'est pas fiable avec UCanAccess :
+il ne détecte pas correctement un schéma déjà présent au redémarrage). Pour créer les tables la
+toute première fois sur un fichier `.accdb` neuf (auto-créé grâce à `;newDatabaseVersion=V2010`
+dans l'URL JDBC) :
+
+```bash
+mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.jpa.hibernate.ddl-auto=update"
+```
+
+Arrêter l'appli une fois démarrée (les tables sont créées dès le démarrage), puis relancer
+normalement (`ddl-auto: none`) pour tous les lancements suivants.
 
 L'API écoute sur `http://localhost:8080/api` :
 - `GET /api/employees?query=...&page=&size=` — recherche paginée
@@ -74,7 +88,8 @@ Ouvrir `http://localhost:4200`.
 docker compose up --build
 ```
 
-Démarre MySQL, l'API (`:8080`) et le front servi par nginx (`:4200`).
+Démarre l'API (`:8080`, avec son fichier `.accdb` persisté dans `./data`) et le front servi par
+nginx (`:4200`).
 
 ## IntelliJ
 
