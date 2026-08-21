@@ -7,6 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="/assets/flag-icons/css/flag-icons.min.css">
+  <!-- Script non-module, exécuté de façon synchrone : garanti de s'exécuter avant le
+       bundle Angular (chargé en type="module", donc différé). Fournit window.__env. -->
+  <script src="/assets/env.js"></script>
 </head>
 <body>
   <app-root></app-root>
