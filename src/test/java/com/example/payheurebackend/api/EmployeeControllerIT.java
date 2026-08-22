@@ -96,6 +96,25 @@ class EmployeeControllerIT {
                 .andExpect(jsonPath("$.content[0].matricule").value("E100"));
     }
 
+    /**
+     * Reproduit le bug signalé : un salarié pointé de 8h à 11h doit apparaître même pour une
+     * période filtrée plus étroite que sa session (9h-11h), pas seulement pour une période qui
+     * englobe ses deux badgeages bruts (8h-12h). Voir EmployeeServiceImpl.employeeIdsAyantPointeDans.
+     */
+    @Test
+    void search_avecPeriode_trouveUnSalarieDontLaSessionChevaucheSansContenirLesDeuxBadgeages() throws Exception {
+        Employee employee = save("E004", "Martin", "Alice");
+        punch(employee, LocalDateTime.of(2026, 8, 19, 8, 0));
+        punch(employee, LocalDateTime.of(2026, 8, 19, 11, 0));
+
+        mockMvc.perform(get("/api/employees")
+                        .param("dateDebut", "2026-08-19T09:00:00")
+                        .param("dateFin", "2026-08-19T11:00:00"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].matricule").value("E004"));
+    }
+
     @Test
     void search_periodeIncoherente_retourne400() throws Exception {
         mockMvc.perform(get("/api/employees")

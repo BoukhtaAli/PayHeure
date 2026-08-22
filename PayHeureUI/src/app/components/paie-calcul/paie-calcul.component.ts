@@ -274,8 +274,13 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
         // demandé, même sans le moindre pointage sur la période — nécessaire pour l'écran de
         // détail (voir PAIE.RESULT_EMPTY), consulté salarié par salarié. Ici, sur ce tableau
         // récapitulatif multi-salariés, ces lignes à 0 n'apportent rien : on ne garde que ceux
-        // ayant au moins un pointage dans la période choisie.
-        const avecPointage = responses.filter(result => result.pointages.length > 0);
+        // ayant au moins une session sur la période choisie. On se base sur `sessions`, pas sur
+        // `pointages` : une session peut chevaucher la période sans qu'aucun de ses deux badgeages
+        // bruts n'y soit strictement compris (ex. entrée à 8h, sortie à 12h, période filtrée
+        // 9h-11h) — `pointages` serait alors vide alors que le salarié a bien travaillé pendant
+        // toute la période demandée (même bug que EmployeeServiceImpl.employeeIdsAyantPointeDans
+        // côté recherche de salariés).
+        const avecPointage = responses.filter(result => result.sessions.length > 0);
         this.results = avecPointage;
         // Partagé avec l'écran de détail (voir PaieResultsService) : évite un rappel backend pour
         // un calcul déjà fait, puisqu'il n'y a de toute façon rien à récupérer par id côté serveur.

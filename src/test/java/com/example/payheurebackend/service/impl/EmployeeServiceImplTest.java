@@ -8,6 +8,7 @@ import com.example.payheurebackend.exception.InvalidPeriodException;
 import com.example.payheurebackend.exception.ResourceNotFoundException;
 import com.example.payheurebackend.mapper.EmployeeMapperImpl;
 import com.example.payheurebackend.repository.EmployeeRepository;
+import com.example.payheurebackend.repository.PointageRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +43,9 @@ class EmployeeServiceImplTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @Mock
+    private PointageRepository pointageRepository;
+
     // Construit après l'injection des @Mock par MockitoExtension : un initialiseur de champ
     // s'exécuterait avant (les champs @Mock ne sont peuplés qu'après la construction de
     // l'instance de test), et employeeRepository y serait encore null.
@@ -49,7 +53,7 @@ class EmployeeServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new EmployeeServiceImpl(employeeRepository, new EmployeeMapperImpl());
+        service = new EmployeeServiceImpl(employeeRepository, pointageRepository, new EmployeeMapperImpl(), new PointageSessionAssembler());
     }
 
     private static Employee employee(long id, String matricule, String nom, String prenom) {

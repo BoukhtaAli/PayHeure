@@ -1,7 +1,6 @@
 package com.example.payheurebackend.repository;
 
 import com.example.payheurebackend.domain.Employee;
-import com.example.payheurebackend.domain.Pointage;
 import com.example.payheurebackend.dto.EmployeeSearchCriteria;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +32,6 @@ class EmployeeSpecificationsIT {
         return entityManager.persistAndFlush(employee);
     }
 
-    private void persistPointage(Employee employee, LocalDateTime dateHeure) {
-        entityManager.persistAndFlush(Pointage.builder().employee(employee).dateHeure(dateHeure).build());
-    }
-
     @Test
     void matching_sansCritere_excludLesSupprimes() {
         persistEmployee("E100", "Martin", "Alice");
@@ -44,7 +39,7 @@ class EmployeeSpecificationsIT {
         deleted.markDeleted();
         entityManager.persistAndFlush(deleted);
 
-        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria(null)));
+        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria(null), List.of()));
 
         assertThat(result).extracting(Employee::getMatricule).containsExactly("E100");
     }
@@ -54,7 +49,7 @@ class EmployeeSpecificationsIT {
         persistEmployee("E100", "Martin", "Alice");
         persistEmployee("E200", "Dupont", "Bruno");
 
-        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria("   ")));
+        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria("   "), List.of()));
 
         assertThat(result).hasSize(2);
     }
@@ -64,26 +59,30 @@ class EmployeeSpecificationsIT {
         persistEmployee("E100", "Martin", "Alice");
         persistEmployee("E200", "Dupont", "Bruno");
 
-        assertThat(employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria("e100"))))
+        assertThat(employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria("e100"), List.of())))
                 .extracting(Employee::getMatricule).containsExactly("E100");
-        assertThat(employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria("MARTIN"))))
+        assertThat(employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria("MARTIN"), List.of())))
                 .extracting(Employee::getMatricule).containsExactly("E100");
-        assertThat(employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria("runo"))))
+        assertThat(employeeRepository.findAll(EmployeeSpecifications.matching(new EmployeeSearchCriteria("runo"), List.of())))
                 .extracting(Employee::getMatricule).containsExactly("E200");
     }
 
+    /**
+     * Le calcul de "qui a pointé dans la période" est effectué en dehors de cette spécification
+     * (voir {@code EmployeeServiceImpl.employeeIdsAyantPointeDans}) : elle se contente de filtrer
+     * par identifiant. Voir {@code EmployeeControllerIT} pour un test bout en bout de la vraie
+     * logique de chevauchement de session.
+     */
     @Test
-    void matching_periode_neRetourneQueLesSalariesAyantPointeDedans() {
+    void matching_periode_neRetourneQueLesSalariesDontLIdEstFourni() {
         Employee dedans = persistEmployee("E100", "Martin", "Alice");
-        Employee dehors = persistEmployee("E200", "Dupont", "Bruno");
+        persistEmployee("E200", "Dupont", "Bruno");
         persistEmployee("E300", "Sans", "Pointage");
-        persistPointage(dedans, LocalDateTime.of(2026, 1, 5, 9, 0));
-        persistPointage(dehors, LocalDateTime.of(2026, 2, 1, 9, 0));
 
         EmployeeSearchCriteria criteria = new EmployeeSearchCriteria(
                 null, LocalDateTime.of(2026, 1, 1, 0, 0), LocalDateTime.of(2026, 1, 31, 23, 59), null);
 
-        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(criteria));
+        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(criteria, List.of(dedans.getId())));
 
         assertThat(result).extracting(Employee::getMatricule).containsExactly("E100");
     }
@@ -97,7 +96,7 @@ class EmployeeSpecificationsIT {
 
         EmployeeSearchCriteria criteria = new EmployeeSearchCriteria(null, null, null, true);
 
-        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(criteria));
+        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(criteria, List.of()));
 
         assertThat(result).extracting(Employee::getMatricule).containsExactly("E200");
     }
@@ -105,14 +104,15 @@ class EmployeeSpecificationsIT {
     @Test
     void matching_combineQueryEtPeriode_lesDeuxCriteresDoiventCorrespondre() {
         Employee correspond = persistEmployee("E100", "Martin", "Alice");
-        Employee mauvaisePeriode = persistEmployee("E101", "Martin", "Zoe");
-        persistPointage(correspond, LocalDateTime.of(2026, 1, 5, 9, 0));
-        persistPointage(mauvaisePeriode, LocalDateTime.of(2026, 2, 1, 9, 0));
+        persistEmployee("E101", "Martin", "Zoe");
 
         EmployeeSearchCriteria criteria = new EmployeeSearchCriteria(
                 "martin", LocalDateTime.of(2026, 1, 1, 0, 0), LocalDateTime.of(2026, 1, 31, 23, 59), null);
 
-        List<Employee> result = employeeRepository.findAll(EmployeeSpecifications.matching(criteria));
+        // Seul E100 a réellement pointé dans la période (id fourni) ; E101 correspond au texte
+        // mais pas à la période, comme si son seul pointage tombait en dehors.
+        List<Employee> result = employeeRepository.findAll(
+                EmployeeSpecifications.matching(criteria, List.of(correspond.getId())));
 
         assertThat(result).extracting(Employee::getMatricule).containsExactly("E100");
     }

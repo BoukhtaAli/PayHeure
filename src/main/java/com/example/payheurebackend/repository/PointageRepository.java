@@ -25,5 +25,15 @@ public interface PointageRepository extends JpaRepository<Pointage, Long> {
             + "order by p.employee.id asc, p.dateHeure asc")
     List<Pointage> findActifsEntre(@Param("debut") LocalDateTime debut, @Param("fin") LocalDateTime fin);
 
+    /**
+     * Comme {@link #findActifsEntre}, mais sans exclure les salariés supprimés logiquement : à
+     * l'appelant de décider s'il les garde. Utilisé par {@code EmployeeServiceImpl}, où ce filtre
+     * est déjà appliqué séparément via {@code EmployeeSpecifications} (le critère "supprimés
+     * uniquement" doit pouvoir se combiner avec une période).
+     */
+    @Query("select p from Pointage p where p.dateHeure between :debut and :fin "
+            + "order by p.employee.id asc, p.dateHeure asc")
+    List<Pointage> findEntre(@Param("debut") LocalDateTime debut, @Param("fin") LocalDateTime fin);
+
     boolean existsByEmployeeId(Long employeeId);
 }
