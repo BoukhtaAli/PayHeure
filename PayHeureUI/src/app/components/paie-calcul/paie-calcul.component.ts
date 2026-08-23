@@ -168,7 +168,17 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
     // formulaire déjà rempli au retour de l'écran de détail plutôt que de rester à `null` jusqu'à
     // la prochaine frappe.
     this.updateCalculPeriode();
-    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => this.updateCalculPeriode());
+    this.form.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.updateCalculPeriode();
+      // Le résultat (ou l'erreur, ex. PAIE.NO_POINTAGE_IN_PERIOD) d'un calcul précédent ne
+      // correspond plus une fois la période ou le tarif modifiés : sans ça, le message resterait
+      // affiché même après un changement de date faisant apparaître de nouveaux salariés dans
+      // l'étape 2, ce qui laisserait croire à tort que ce nouveau contexte n'a toujours aucun
+      // pointage.
+      this.results = [];
+      this.errorMessage = null;
+      this.errorMessageKey = null;
+    });
   }
 
   ngOnDestroy(): void {
