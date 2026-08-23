@@ -78,7 +78,19 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
 
   selectedEmployees: Employee[] = [];
   results: PaieCalculResponse[] = [];
+
+  /**
+   * Message d'erreur brut (déjà traduit côté serveur, voir `errorMessageKey`), affiché tel quel.
+   * `errorMessageKey` a priorité côté template : les deux ne sont jamais renseignés en même temps.
+   */
   errorMessage: string | null = null;
+
+  /**
+   * Clé i18n de l'erreur à afficher, traduite dans le template via le pipe `translate` — donc
+   * réactive à un changement de langue, contrairement à un texte déjà résolu par
+   * `translate.instant()` et stocké tel quel (piège dans lequel `errorMessage` ne doit pas tomber).
+   */
+  errorMessageKey: string | null = null;
 
   /** Recherche à restaurer dans <app-employee-search> ; voir ngOnInit. */
   initialSearchQuery = '';
@@ -230,6 +242,7 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
     this.paieResultsService.selectedEmployees = employees;
     this.results = [];
     this.errorMessage = null;
+    this.errorMessageKey = null;
   }
 
   onQueryChanged(query: string): void {
@@ -269,6 +282,7 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.errorMessage = null;
+    this.errorMessageKey = null;
     const { dateDebut, heureDebut, dateFin, heureFin, tauxHoraire } = this.form.value;
     const periode = {
       dateDebut: toIsoDateTime(dateDebut, heureDebut),
@@ -302,9 +316,7 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
         // Partagé avec l'écran de détail (voir PaieResultsService) : évite un rappel backend pour
         // un calcul déjà fait, puisqu'il n'y a de toute façon rien à récupérer par id côté serveur.
         this.paieResultsService.results = avecPointage;
-        this.errorMessage = avecPointage.length === 0
-          ? this.translate.instant('PAIE.NO_POINTAGE_IN_PERIOD')
-          : null;
+        this.errorMessageKey = avecPointage.length === 0 ? 'PAIE.NO_POINTAGE_IN_PERIOD' : null;
         // `smooth`, contrairement au retour depuis l'écran de détail : ici l'utilisateur regarde
         // déjà la page au moment où le tableau apparaît, un saut instantané serait déroutant.
         if (avecPointage.length > 0) {
@@ -317,7 +329,12 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
         // pas traduit, contrairement au reste de l'écran. Le seul cas facilement prévisible
         // (période invalide) est donc intercepté avant l'appel par `periodValidator` ; ce message
         // générique ne sert plus que pour les erreurs réellement inattendues côté serveur.
-        this.errorMessage = error?.error?.message ?? this.translate.instant('PAIE.CALCUL_ERROR');
+        // `errorMessage` (texte déjà résolu) sert seulement à ce cas brut venu du backend ;
+        // `errorMessageKey` (clé i18n) au message générique ci-dessous, traduit dans le template
+        // via le pipe `translate` pour rester à jour si l'utilisateur change de langue ensuite.
+        const messageBrut = error?.error?.message;
+        this.errorMessage = messageBrut ?? null;
+        this.errorMessageKey = messageBrut ? null : 'PAIE.CALCUL_ERROR';
       }
     });
   }
