@@ -34,13 +34,22 @@ export class FlatpickrDirective implements OnInit, OnChanges, OnDestroy, Control
   private onChangeFn: (value: string) => void = () => {};
   private onTouchedFn: () => void = () => {};
 
+  /**
+   * Dernière valeur connue du `FormControl` (remontée par flatpickr ou écrite via `writeValue`),
+   * pour éviter à `onBlur` de la renvoyer inutilement — voir son commentaire.
+   */
+  private lastValue: string | null = null;
+
   constructor(private readonly elementRef: ElementRef<HTMLInputElement>) {}
 
   ngOnInit(): void {
     this.instance = flatpickr(this.elementRef.nativeElement, {
       allowInput: true,
       ...this.appFlatpickr,
-      onChange: (_dates, dateStr) => this.onChangeFn(dateStr),
+      onChange: (_dates, dateStr) => {
+        this.lastValue = dateStr;
+        this.onChangeFn(dateStr);
+      },
       onClose: () => this.onTouchedFn()
     });
 
@@ -62,8 +71,21 @@ export class FlatpickrDirective implements OnInit, OnChanges, OnDestroy, Control
     }
   }
 
+  /**
+   * Ne remonte la valeur au `FormControl` que si elle a réellement changé depuis la dernière fois
+   * (`lastValue`) : sans cette garde, tout blur du champ — y compris cliquer dans une zone vide du
+   * calendrier flatpickr encore ouvert, qui n'est pas rattrapé par la logique interne de la
+   * librairie mais blur quand même l'input nativement — remontait la valeur inchangée au
+   * `FormControl`. Or `FormControl.setValue` déclenche `valueChanges` même à valeur identique, ce
+   * qui, sur l'écran de calcul de paie, effaçait à tort le message d'erreur "aucun salarié trouvé"
+   * sans qu'aucune nouvelle date n'ait été choisie (voir PaieCalculComponent.ngOnInit).
+   */
   private readonly onBlur = (): void => {
-    this.onChangeFn(this.elementRef.nativeElement.value);
+    const value = this.elementRef.nativeElement.value;
+    if (value !== this.lastValue) {
+      this.lastValue = value;
+      this.onChangeFn(value);
+    }
     this.onTouchedFn();
   };
 
@@ -80,6 +102,11 @@ export class FlatpickrDirective implements OnInit, OnChanges, OnDestroy, Control
   }
 
   writeValue(value: string): void {
+    // Tient `lastValue` à jour même ici (voir son commentaire dans `onBlur`) : une valeur écrite
+    // par le formulaire (ex. `patchValue`, restauration au retour de l'écran de détail) ne doit
+    // pas être reprise pour "changée" par le prochain blur simplement parce qu'elle n'était pas
+    // passée par flatpickr lui-même.
+    this.lastValue = value ?? '';
     if (this.instance) {
       this.instance.setDate(value ?? '', false);
     } else {
