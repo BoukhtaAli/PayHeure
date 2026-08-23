@@ -3,6 +3,7 @@ services:
   payheure-backend:
     build: .
     container_name: payheure_backend_container
+    restart: unless-stopped
     ports:
       - "8080:8080"
     volumes:
@@ -16,6 +17,7 @@ services:
   frontend:
     build: ./PayHeureUI
     container_name: payheure_frontend_container
+    restart: unless-stopped
     ports:
       - "4200:80"
     depends_on:
