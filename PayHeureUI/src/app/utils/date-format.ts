@@ -28,10 +28,3 @@ export function fromIsoDateTime(iso: string): string {
   const [annee, mois, jour] = datePart.split('-');
   return `${jour}-${mois}-${annee} ${timePart.slice(0, 5)}`;
 }
-
-/** Date du jour au format `dd-MM-yyyy`, utilisée comme valeur par défaut de certains formulaires. */
-export function dateDuJour(): string {
-  const deuxChiffres = (n: number) => n.toString().padStart(2, '0');
-  const aujourdHui = new Date();
-  return `${deuxChiffres(aujourdHui.getDate())}-${deuxChiffres(aujourdHui.getMonth() + 1)}-${aujourdHui.getFullYear()}`;
-}

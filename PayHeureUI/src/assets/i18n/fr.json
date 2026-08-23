@@ -106,7 +106,6 @@
     "FIELD_INVALID_DATE": "Date invalide (dd-MM-yyyy).",
     "FIELD_INVALID_TIME": "Heure invalide (HH:mm).",
     "RESULTS_TITLE": "Résultats",
-    "RESULTS_PAGINATION": "Pagination des résultats",
     "RESULT_COUNT": "{{count}} pointage(s) incomplet(s) chez {{employeeCount}} salarié(s).",
     "RESULT_EMPTY": "Aucun salarié n'a de pointage incomplet sur cette période.",
     "RESULT_EMPLOYEE": "Salarié",

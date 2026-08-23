@@ -106,7 +106,6 @@
     "FIELD_INVALID_DATE": "Invalid date (dd-MM-yyyy).",
     "FIELD_INVALID_TIME": "Invalid time (HH:mm).",
     "RESULTS_TITLE": "Results",
-    "RESULTS_PAGINATION": "Results pagination",
     "RESULT_COUNT": "{{count}} incomplete record(s) across {{employeeCount}} employee(s).",
     "RESULT_EMPTY": "No employee has an incomplete time clock record for this period.",
     "RESULT_EMPLOYEE": "Employee",
