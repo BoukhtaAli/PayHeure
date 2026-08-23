@@ -82,26 +82,26 @@
         </tr>
       </thead>
       <!-- Une ligne par journée en anomalie, pas par salarié : un salarié avec plusieurs journées
-           incomplètes sur la période apparaît donc sur plusieurs lignes. Le clic déplie une ligne
-           supplémentaire listant les badgeages bruts de cette journée (voir `toggle`). -->
+           incomplètes sur la période apparaît donc sur plusieurs lignes, pas forcément
+           consécutives (liste triée par date décroissante, tous salariés confondus, voir
+           `lignes`). Le clic déplie une ligne supplémentaire listant les badgeages bruts de cette
+           journée (voir `toggle`). -->
       <tbody>
-        <ng-container *ngFor="let result of results">
-          <ng-container *ngFor="let jour of result.anomalies">
-            <tr class="table-warning cursor-pointer" (click)="toggle(result, jour)">
-              <td>{{ result.employee.prenom }} {{ result.employee.nom }} ({{ result.employee.matricule }})</td>
-              <td dir="ltr">
-                <i class="fas" [ngClass]="estDeplie(result, jour) ? 'fa-chevron-up' : 'fa-chevron-down'" aria-hidden="true"></i>
-                {{ jour.date | date:'dd-MM-yyyy' }}
-              </td>
-            </tr>
-            <tr *ngIf="estDeplie(result, jour)">
-              <td colspan="2" class="pointages-jour">
-                <span *ngFor="let pointage of jour.pointages; let last = last" dir="ltr">
-                  {{ pointage.dateHeure | date:'HH:mm' }}<ng-container *ngIf="!last">, </ng-container>
-                </span>
-              </td>
-            </tr>
-          </ng-container>
+        <ng-container *ngFor="let ligne of lignes">
+          <tr class="table-warning cursor-pointer" (click)="toggle(ligne.result, ligne.jour)">
+            <td>{{ ligne.result.employee.prenom }} {{ ligne.result.employee.nom }} ({{ ligne.result.employee.matricule }})</td>
+            <td dir="ltr">
+              <i class="fas" [ngClass]="estDeplie(ligne.result, ligne.jour) ? 'fa-chevron-up' : 'fa-chevron-down'" aria-hidden="true"></i>
+              {{ ligne.jour.date | date:'dd-MM-yyyy' }}
+            </td>
+          </tr>
+          <tr *ngIf="estDeplie(ligne.result, ligne.jour)">
+            <td colspan="2" class="pointages-jour">
+              <span *ngFor="let pointage of ligne.jour.pointages; let last = last" dir="ltr">
+                {{ pointage.dateHeure | date:'HH:mm' }}<ng-container *ngIf="!last">, </ng-container>
+              </span>
+            </td>
+          </tr>
         </ng-container>
       </tbody>
     </table>

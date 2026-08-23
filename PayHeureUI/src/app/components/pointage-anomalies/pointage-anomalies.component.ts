@@ -69,6 +69,14 @@ export class PointageAnomaliesComponent {
   errorMessage: string | null = null;
 
   /**
+   * Une ligne par journée en anomalie, tous salariés confondus, triée par date décroissante (voir
+   * `rechercher`). Calculée une seule fois à la recherche plutôt qu'un getter recalculé à chaque
+   * cycle de détection de changements : `results` reste groupé par salarié (utile pour le CSV et
+   * `totalAnomalies`), `lignes` sert uniquement à l'affichage du tableau.
+   */
+  lignes: { result: PointageAnomalieResponse; jour: PointageAnomalieJour }[] = [];
+
+  /**
    * Clé (`employeeId-date`) de la seule ligne actuellement dépliée, ou `null` si aucune : voir
    * `toggle`/`estDeplie`. Un seul champ plutôt qu'une `Set` — en ouvrir une referme les autres
    * (comportement accordéon), pas d'affichage simultané de plusieurs détails.
@@ -107,18 +115,20 @@ export class PointageAnomaliesComponent {
       dateFin: toIsoDateTime(dateFin, heureFin)
     }).subscribe({
       next: results => {
+        this.results = results;
         // Le backend renvoie les journées en anomalie par ordre chronologique (voir
-        // PointageAnomalieServiceImpl) ; on les affiche ici de la plus récente à la plus
-        // ancienne. Comparaison en chaîne (yyyy-MM-dd) : ordre lexical = ordre chronologique.
-        this.results = results.map(result => ({
-          ...result,
-          anomalies: [...result.anomalies].sort((a, b) => b.date.localeCompare(a.date))
-        }));
+        // PointageAnomalieServiceImpl) et groupées par salarié ; on affiche ici une liste plate,
+        // tous salariés confondus, de la plus récente à la plus ancienne. Comparaison en chaîne
+        // (yyyy-MM-dd) : ordre lexical = ordre chronologique.
+        this.lignes = results
+          .flatMap(result => result.anomalies.map(jour => ({ result, jour })))
+          .sort((a, b) => b.jour.date.localeCompare(a.jour.date));
         this.searched = true;
         this.deplie = null;
       },
       error: error => {
         this.results = [];
+        this.lignes = [];
         this.searched = true;
         // Le backend ne répond qu'en français (voir GlobalExceptionHandler) et ce message n'est
         // pas traduit, contrairement au reste de l'écran. Le seul cas facilement prévisible
@@ -164,19 +174,20 @@ export class PointageAnomaliesComponent {
    * heures de badgeage de la journée sont regroupées dans une seule colonne, séparées par
    * `SEPARATEUR_ENTREES` plutôt qu'une colonne par badgeage (leur nombre varie d'une journée à
    * l'autre). Les résultats sont déjà en mémoire côté client, pas d'appel serveur pour ça, juste
-   * la construction du fichier et son téléchargement.
+   * la construction du fichier et son téléchargement. Mêmes lignes, dans le même ordre (date
+   * décroissante, tous salariés confondus), que le tableau affiché à l'écran.
    */
   telechargerCsv(): void {
     const entetes = ['RESULT_EMPLOYEE', 'RESULT_COL_DATE', 'RESULT_COL_ENTRIES']
       .map(cle => this.translate.instant(`ANOMALIES.${cle}`));
 
-    const lignes = this.results.flatMap(result => result.anomalies.map(jour => [
+    const lignes = this.lignes.map(({ result, jour }) => [
       `${result.employee.prenom} ${result.employee.nom} (${result.employee.matricule})`,
       new Date(jour.date).toLocaleDateString('fr-FR'),
       jour.pointages
         .map(pointage => new Date(pointage.dateHeure).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }))
         .join(PointageAnomaliesComponent.SEPARATEUR_ENTREES)
-    ]));
+    ]);
 
     telechargerCsv(`anomalies-pointage-${horodatageLocal(new Date())}.csv`, entetes, lignes);
   }
