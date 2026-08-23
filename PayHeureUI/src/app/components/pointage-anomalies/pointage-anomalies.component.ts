@@ -14,6 +14,14 @@ import { BreadcrumbItem } from '../breadcrumb/breadcrumb.component';
  * les pièges de fuseau horaire d'un parsing `Date`. Même validateur que l'écran de calcul de
  * paie (voir paie-calcul.component.ts), dupliqué ici faute d'un module de formulaires partagé.
  */
+/** Date du jour au format `dd-MM-yyyy` attendu par `DATE_PATTERN`, pour pré-remplir le formulaire. */
+function dateAujourdhui(): string {
+  const aujourdhui = new Date();
+  const jour = String(aujourdhui.getDate()).padStart(2, '0');
+  const mois = String(aujourdhui.getMonth() + 1).padStart(2, '0');
+  return `${jour}-${mois}-${aujourdhui.getFullYear()}`;
+}
+
 function periodValidator(group: AbstractControl): ValidationErrors | null {
   const { dateDebut, heureDebut, dateFin, heureFin } = group.value;
   const champsValides = DATE_PATTERN.test(dateDebut) && HEURE_PATTERN.test(heureDebut)
@@ -93,11 +101,17 @@ export class PointageAnomaliesComponent {
    */
   private deplie: string | null = null;
 
+  /**
+   * Par défaut, l'écran pré-remplit la période sur la journée en cours (00:00 à 23:59) : c'est le
+   * cas d'usage le plus fréquent (vérifier les pointages du jour même) et évite de ressaisir la
+   * date à chaque ouverture. L'utilisateur reste libre de choisir une autre période avant de
+   * lancer la recherche.
+   */
   readonly form: FormGroup = this.fb.group({
-    dateDebut: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
-    heureDebut: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
-    dateFin: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
-    heureFin: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]]
+    dateDebut: [dateAujourdhui(), [Validators.required, Validators.pattern(DATE_PATTERN)]],
+    heureDebut: ['00:00', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
+    dateFin: [dateAujourdhui(), [Validators.required, Validators.pattern(DATE_PATTERN)]],
+    heureFin: ['23:59', [Validators.required, Validators.pattern(HEURE_PATTERN)]]
   }, { validators: [periodValidator] });
 
   constructor(
