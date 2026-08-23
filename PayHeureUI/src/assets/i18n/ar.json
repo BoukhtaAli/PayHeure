@@ -10,8 +10,10 @@
     "SWITCH": "اللغة"
   },
   "PAGINATION": {
+    "FIRST_PAGE": "الصفحة الأولى",
     "PREV_PAGE": "الصفحة السابقة",
-    "NEXT_PAGE": "الصفحة التالية"
+    "NEXT_PAGE": "الصفحة التالية",
+    "LAST_PAGE": "الصفحة الأخيرة"
   },
   "HOME": {
     "HERO_TITLE": "PayHeure",

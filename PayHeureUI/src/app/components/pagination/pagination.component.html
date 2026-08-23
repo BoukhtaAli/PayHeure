@@ -1,6 +1,13 @@
 <nav *ngIf="totalPages > 1" [attr.aria-label]="ariaLabel" class="d-flex justify-content-center mt-3">
   <ul class="pagination mb-0">
     <li class="page-item" [class.disabled]="page === 0">
+      <button type="button" class="page-link" (click)="goToPage(0)" [disabled]="page === 0">
+        <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+        <span class="visually-hidden">{{ 'PAGINATION.FIRST_PAGE' | translate }}</span>
+      </button>
+    </li>
+
+    <li class="page-item" [class.disabled]="page === 0">
       <button type="button" class="page-link" (click)="goToPage(page - 1)" [disabled]="page === 0">
         <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
         <span class="visually-hidden">{{ 'PAGINATION.PREV_PAGE' | translate }}</span>
@@ -20,6 +27,13 @@
       <button type="button" class="page-link" (click)="goToPage(page + 1)" [disabled]="page >= totalPages - 1">
         <span class="visually-hidden">{{ 'PAGINATION.NEXT_PAGE' | translate }}</span>
         <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      </button>
+    </li>
+
+    <li class="page-item" [class.disabled]="page >= totalPages - 1">
+      <button type="button" class="page-link" (click)="goToPage(totalPages - 1)" [disabled]="page >= totalPages - 1">
+        <span class="visually-hidden">{{ 'PAGINATION.LAST_PAGE' | translate }}</span>
+        <i class="fa-solid fa-angles-right" aria-hidden="true"></i>
       </button>
     </li>
   </ul>

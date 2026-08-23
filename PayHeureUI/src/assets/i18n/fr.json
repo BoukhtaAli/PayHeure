@@ -10,8 +10,10 @@
     "SWITCH": "Langue"
   },
   "PAGINATION": {
+    "FIRST_PAGE": "Première page",
     "PREV_PAGE": "Page précédente",
-    "NEXT_PAGE": "Page suivante"
+    "NEXT_PAGE": "Page suivante",
+    "LAST_PAGE": "Dernière page"
   },
   "HOME": {
     "HERO_TITLE": "PayHeure",
