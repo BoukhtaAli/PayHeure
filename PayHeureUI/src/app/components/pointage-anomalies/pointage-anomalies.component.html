@@ -85,9 +85,10 @@
            incomplètes sur la période apparaît donc sur plusieurs lignes, pas forcément
            consécutives (liste triée par date décroissante, tous salariés confondus, voir
            `lignes`). Le clic déplie une ligne supplémentaire listant les badgeages bruts de cette
-           journée (voir `toggle`). -->
+           journée (voir `toggle`). Résultats aplatis puis découpés en pages côté client (voir
+           `lignesPage`). -->
       <tbody>
-        <ng-container *ngFor="let ligne of lignes">
+        <ng-container *ngFor="let ligne of lignesPage">
           <tr class="table-warning cursor-pointer" (click)="toggle(ligne.result, ligne.jour)">
             <td>{{ ligne.result.employee.prenom }} {{ ligne.result.employee.nom }} ({{ ligne.result.employee.matricule }})</td>
             <td dir="ltr">
@@ -105,5 +106,10 @@
         </ng-container>
       </tbody>
     </table>
+
+    <app-pagination *ngIf="totalPages > 1" [page]="page" [totalPages]="totalPages"
+                     [ariaLabel]="'ANOMALIES.RESULTS_PAGINATION' | translate"
+                     (pageChange)="page = $event">
+    </app-pagination>
   </div>
 </div>

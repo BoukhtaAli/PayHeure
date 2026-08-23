@@ -106,6 +106,7 @@
     "FIELD_INVALID_DATE": "تاريخ غير صالح (dd-MM-yyyy).",
     "FIELD_INVALID_TIME": "وقت غير صالح (HH:mm).",
     "RESULTS_TITLE": "النتائج",
+    "RESULTS_PAGINATION": "ترقيم صفحات النتائج",
     "RESULT_COUNT": "{{count}} تسجيل (تسجيلات) غير مكتمل لدى {{employeeCount}} موظف (موظفين).",
     "RESULT_EMPTY": "لا يوجد أي موظف لديه تسجيل حضور غير مكتمل خلال هذه الفترة.",
     "RESULT_EMPLOYEE": "الموظف",

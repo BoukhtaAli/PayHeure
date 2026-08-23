@@ -46,6 +46,13 @@ export class PointageAnomaliesComponent {
    */
   private static readonly SEPARATEUR_ENTREES = ' | ';
 
+  /**
+   * Taille de page du tableau de résultats. Pagination purement côté client : contrairement au
+   * calcul de paie, cet écran n'a qu'un seul appel serveur qui renvoie déjà tous les salariés en
+   * anomalie sur la période (voir `rechercher`), il n'y a donc pas de `PageResponse` à relayer.
+   */
+  private static readonly TAILLE_PAGE = 10;
+
   readonly breadcrumbItems: BreadcrumbItem[] = [
     { labelKey: 'NAV.HOME', link: ['/home'] },
     { labelKey: 'NAV.ANOMALIES' }
@@ -76,6 +83,9 @@ export class PointageAnomaliesComponent {
    */
   lignes: { result: PointageAnomalieResponse; jour: PointageAnomalieJour }[] = [];
 
+  /** Page courante du tableau de résultats, 0-indexée (alignée sur `app-pagination`). */
+  page = 0;
+
   /**
    * Clé (`employeeId-date`) de la seule ligne actuellement dépliée, ou `null` si aucune : voir
    * `toggle`/`estDeplie`. Un seul champ plutôt qu'une `Set` — en ouvrir une referme les autres
@@ -99,6 +109,16 @@ export class PointageAnomaliesComponent {
   /** Nombre total d'anomalies tous salariés confondus, affiché dans le titre des résultats. */
   get totalAnomalies(): number {
     return this.results.reduce((total, result) => total + result.anomalies.length, 0);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.lignes.length / PointageAnomaliesComponent.TAILLE_PAGE);
+  }
+
+  /** Lignes de la page courante, seules affichées dans le tableau de résultats. */
+  get lignesPage(): { result: PointageAnomalieResponse; jour: PointageAnomalieJour }[] {
+    const debut = this.page * PointageAnomaliesComponent.TAILLE_PAGE;
+    return this.lignes.slice(debut, debut + PointageAnomaliesComponent.TAILLE_PAGE);
   }
 
   rechercher(): void {
@@ -125,11 +145,13 @@ export class PointageAnomaliesComponent {
           .sort((a, b) => b.jour.date.localeCompare(a.jour.date));
         this.searched = true;
         this.deplie = null;
+        this.page = 0;
       },
       error: error => {
         this.results = [];
         this.lignes = [];
         this.searched = true;
+        this.page = 0;
         // Le backend ne répond qu'en français (voir GlobalExceptionHandler) et ce message n'est
         // pas traduit, contrairement au reste de l'écran. Le seul cas facilement prévisible
         // (période invalide) est intercepté avant l'appel par `periodValidator` ; ce message
@@ -170,8 +192,9 @@ export class PointageAnomaliesComponent {
   }
 
   /**
-   * Exporte la liste affichée, une ligne par journée en anomalie (pas par badgeage brut) : les
-   * heures de badgeage de la journée sont regroupées dans une seule colonne, séparées par
+   * Exporte tous les résultats de la recherche, pas seulement la page actuellement affichée dans
+   * le tableau, une ligne par journée en anomalie (pas par badgeage brut) : les heures de
+   * badgeage de la journée sont regroupées dans une seule colonne, séparées par
    * `SEPARATEUR_ENTREES` plutôt qu'une colonne par badgeage (leur nombre varie d'une journée à
    * l'autre). Les résultats sont déjà en mémoire côté client, pas d'appel serveur pour ça, juste
    * la construction du fichier et son téléchargement. Mêmes lignes, dans le même ordre (date
