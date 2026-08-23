@@ -14,10 +14,20 @@ import { DATE_PATTERN, HEURE_PATTERN, fromIsoDateTime, toIsoDateTime } from '../
 import { horodatageLocal, telechargerCsv } from '../../utils/csv';
 import { BreadcrumbItem } from '../breadcrumb/breadcrumb.component';
 
+/** Date du jour au format `dd-MM-yyyy` attendu par `DATE_PATTERN`, pour pré-remplir le formulaire. */
+function dateAujourdhui(): string {
+  const aujourdhui = new Date();
+  const jour = String(aujourdhui.getDate()).padStart(2, '0');
+  const mois = String(aujourdhui.getMonth() + 1).padStart(2, '0');
+  return `${jour}-${mois}-${aujourdhui.getFullYear()}`;
+}
+
 /**
  * La comparaison se fait en chaîne (pas `new Date(...)`) : une fois convertie en
  * `yyyy-MM-ddTHH:mm`, zéro-paddée, l'ordre lexical suit exactement l'ordre chronologique, sans
- * les pièges de fuseau horaire d'un parsing `Date`.
+ * les pièges de fuseau horaire d'un parsing `Date`. Même validateur que l'écran de recherche
+ * d'anomalies de pointage (voir pointage-anomalies.component.ts), dupliqué ici faute d'un module
+ * de formulaires partagé.
  */
 function periodValidator(group: AbstractControl): ValidationErrors | null {
   const { dateDebut, heureDebut, dateFin, heureFin } = group.value;
@@ -98,11 +108,18 @@ export class PaieCalculComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
+  /**
+   * Par défaut, l'écran pré-remplit la période sur la journée en cours (00:00 à 23:59), comme
+   * l'écran de recherche d'anomalies de pointage (voir pointage-anomalies.component.ts) : c'est le
+   * cas d'usage le plus fréquent et évite de ressaisir la date à chaque ouverture. Écrasé au
+   * besoin par la restauration de la dernière recherche au retour depuis l'écran de détail (voir
+   * ngOnInit) ; l'utilisateur reste sinon libre de choisir une autre période avant de calculer.
+   */
   readonly form: FormGroup = this.fb.group({
-    dateDebut: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
-    heureDebut: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
-    dateFin: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
-    heureFin: ['', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
+    dateDebut: [dateAujourdhui(), [Validators.required, Validators.pattern(DATE_PATTERN)]],
+    heureDebut: ['00:00', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
+    dateFin: [dateAujourdhui(), [Validators.required, Validators.pattern(DATE_PATTERN)]],
+    heureFin: ['23:59', [Validators.required, Validators.pattern(HEURE_PATTERN)]],
     tauxHoraire: [null, [Validators.required, Validators.min(0.01)]]
   }, { validators: [periodValidator] });
 

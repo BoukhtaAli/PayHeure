@@ -8,7 +8,7 @@
     <!-- La période choisie ici détermine la liste de salariés proposée dans l'étape 2 (voir
          PaieCalculComponent.calculPeriode) : elle vient donc en premier, colonne large pour ses 4
          champs date/heure côte à côte. -->
-    <div class="col-lg-8">
+    <div class="col-lg-7">
       <div class="panel">
         <h2 class="panel-title">{{ 'PAIE.STEP_1' | translate }}</h2>
 
@@ -23,9 +23,9 @@
             (souvent MM/dd/yyyy et AM/PM en anglais US), indépendamment de la langue choisie dans
             l'appli. Format imposé ici via appFlatpickr : dd-MM-yyyy et HH:mm (24h), jamais d'AM/PM.
           -->
-          <!-- 4 colonnes de 3 = 12 : les dates/heures remplissent exactement la première ligne,
-               le tarif horaire qui suit passe donc naturellement à la ligne suivante. -->
-          <div class="col-md-3">
+          <!-- 2 colonnes de 6 = 12 par ligne : début (date + heure) remplit la première ligne,
+               fin (date + heure) passe à la ligne suivante plutôt que de partager la même ligne. -->
+          <div class="col-md-6">
             <label for="dateDebut" class="form-label">{{ 'PAIE.DATE_START' | translate }}</label>
             <input id="dateDebut" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
                    [appFlatpickr]="dateOptions"
@@ -33,7 +33,7 @@
                    formControlName="dateDebut">
             <div class="invalid-feedback" *ngIf="champErreur('dateDebut') as cle">{{ cle | translate }}</div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-6">
             <label for="heureDebut" class="form-label">{{ 'PAIE.TIME_START' | translate }}</label>
             <input id="heureDebut" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
                    [appFlatpickr]="heureOptions"
@@ -41,7 +41,7 @@
                    formControlName="heureDebut">
             <div class="invalid-feedback" *ngIf="champErreur('heureDebut') as cle">{{ cle | translate }}</div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-6">
             <label for="dateFin" class="form-label">{{ 'PAIE.DATE_END' | translate }}</label>
             <input id="dateFin" type="text" placeholder="dd-MM-yyyy" dir="ltr" class="form-control"
                    [appFlatpickr]="dateOptions"
@@ -49,7 +49,7 @@
                    formControlName="dateFin">
             <div class="invalid-feedback" *ngIf="champErreur('dateFin') as cle">{{ cle | translate }}</div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-6">
             <label for="heureFin" class="form-label">{{ 'PAIE.TIME_END' | translate }}</label>
             <input id="heureFin" type="text" placeholder="HH:mm" dir="ltr" class="form-control"
                    [appFlatpickr]="heureOptions"
@@ -83,7 +83,7 @@
       </div>
     </div>
 
-    <div class="col-lg-4">
+    <div class="col-lg-5">
       <div class="panel">
         <h2 class="panel-title">{{ 'PAIE.STEP_2' | translate }}</h2>
 
