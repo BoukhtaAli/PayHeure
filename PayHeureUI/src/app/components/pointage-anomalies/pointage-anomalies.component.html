@@ -97,8 +97,8 @@
             </td>
           </tr>
           <tr *ngIf="estDeplie(ligne.result, ligne.jour)">
-            <td colspan="2" class="pointages-jour">
-              <span *ngFor="let pointage of ligne.jour.pointages; let last = last" dir="ltr">
+            <td colspan="2" class="pointages-jour" dir="ltr">
+              <span *ngFor="let pointage of ligne.jour.pointages; let last = last">
                 {{ pointage.dateHeure | date:'HH:mm' }}<ng-container *ngIf="!last">, </ng-container>
               </span>
             </td>

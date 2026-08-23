@@ -10,7 +10,7 @@ l'écran × heures/minutes travaillées). Généré sur le même modèle que le 
 Le dépôt racine **est** le backend ; le frontend vit dedans, dans `PayHeureUI/`.
 
 ```
-PayHeure/                       API Spring Boot (Java 17, Maven, MapStruct, JPA/MS Access via UCanAccess)
+PayHeure/                       API Spring Boot (Java 21, Maven, MapStruct, JPA/MS Access via UCanAccess)
 ├── pom.xml
 ├── src/main/java/com/example/payheurebackend/
 │   ├── domain/            Employee, Pointage (entités JPA)
@@ -42,7 +42,7 @@ PayHeure/                       API Spring Boot (Java 17, Maven, MapStruct, JPA/
 
 ## Prérequis
 
-- JDK 17, Maven (le wrapper `mvnw`/`mvnw.cmd` est fourni, pas besoin d'installer Maven à part)
+- JDK 21, Maven (le wrapper `mvnw`/`mvnw.cmd` est fourni, pas besoin d'installer Maven à part)
 - Node.js 18+ et npm
 - Aucun serveur de base de données à installer : UCanAccess (driver JDBC pur Java) lit/écrit
   directement le fichier `.accdb` configuré dans `spring.datasource.url`

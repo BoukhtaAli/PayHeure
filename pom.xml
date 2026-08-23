@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.2</version>
+        <version>4.1.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
@@ -27,10 +27,10 @@
         <url/>
     </scm>
     <properties>
-        <java.version>17</java.version>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <java.version>21</java.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <jacoco.version>0.8.12</jacoco.version>
+        <jacoco.version>0.8.15</jacoco.version>
         <!-- Seuil de couverture de ligne vérifié par `mvn verify` (unité + intégration fusionnées,
              voir la configuration de jacoco-maven-plugin ci-dessous). -->
         <jacoco.line.minimum>0.90</jacoco.line.minimum>
@@ -42,8 +42,11 @@
             <version>${mapstruct.version}</version>
         </dependency>
         <dependency>
+            <!-- spring-boot-starter-web est déprécié depuis Boot 4 au profit de starter-webmvc,
+                 qui n'embarque que Spring MVC + Tomcat (spring-boot-starter-web tirait aussi du
+                 code partagé avec WebFlux, désormais séparé). -->
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -67,8 +70,17 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <!-- Boot 4 a éclaté spring-boot-starter-test par techno : celui-ci apporte
+                 MockMvc/@AutoConfigureMockMvc (utilisés par les *ControllerIT), et tire de toute
+                 façon spring-boot-starter-test en transitif. -->
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- Apporte @DataJpaTest / TestEntityManager (utilisés par EmployeeSpecificationsIT). -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -89,7 +101,7 @@
                      séparément des tests unitaires (*Test.java) exécutés par Surefire lors de `mvn test`. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>3.5.6</version>
                 <executions>
                     <execution>
                         <goals>

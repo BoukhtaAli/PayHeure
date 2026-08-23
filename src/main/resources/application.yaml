@@ -18,6 +18,10 @@ spring:
     # Les services renvoient des DTO : aucune donnée n'est chargée hors transaction.
     open-in-view: false
   jackson:
-    serialization:
-      write-dates-as-timestamps: false
+    # Depuis Jackson 3 (Boot 4), WRITE_DATES_AS_TIMESTAMPS est un DateTimeFeature et non plus un
+    # SerializationFeature : spring.jackson.serialization.write-dates-as-timestamps ne bind plus
+    # (l'enum SerializationFeature n'a plus de constante de ce nom, il faut passer par datatype.datetime).
+    datatype:
+      datetime:
+        write-dates-as-timestamps: false
     default-property-inclusion: non_null
