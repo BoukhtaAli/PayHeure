@@ -1,9 +1,10 @@
 {
   "NAV": {
     "HOME": "الرئيسية",
-    "POINTAGE": "تسجيل الحضور",
+    "POINTAGE": "إضافة تسجيل",
     "PAIE": "حساب الأجر",
     "ANOMALIES": "تسجيلات غير مكتملة",
+    "ANALYTICS": "التحليلات",
     "TOGGLE": "فتح/إغلاق التنقل"
   },
   "LANG": {
@@ -114,6 +115,31 @@
     "RESULT_EMPLOYEE": "الموظف",
     "RESULT_COL_DATE": "التاريخ",
     "RESULT_COL_ENTRIES": "التسجيلات",
+    "DOWNLOAD_CSV": "تنزيل CSV"
+  },
+  "ANALYTICS": {
+    "TITLE": "تحليلات تسجيلات الحضور",
+    "SUBTITLE": "تصور عدد تسجيلات الحضور الكاملة وغير المكتملة ونسبتها، يوميا أو أسبوعيا أو شهريا، وتنقل بحرية بين الفترات.",
+    "GROUP_BY": "التجميع حسب",
+    "PRESET_JOUR": "يوم",
+    "PRESET_SEMAINE": "أسبوع",
+    "PRESET_MOIS": "شهر",
+    "PREVIOUS": "الفترة السابقة",
+    "NEXT": "الفترة التالية",
+    "TODAY": "اليوم",
+    "SEARCH_ERROR": "حدث خطأ أثناء احتساب الإحصائيات.",
+    "RESULT_EMPTY": "لا يوجد أي تسجيل حضور خلال هذه الفترة.",
+    "STAT_COMPLETE": "تسجيلات كاملة",
+    "STAT_INCOMPLETE": "تسجيلات غير مكتملة",
+    "STAT_RATIO": "نسبة الاكتمال",
+    "CHART_TITLE": "الكاملة / غير المكتملة حسب اليوم",
+    "CHART_TITLE_JOUR": "الكاملة / غير المكتملة",
+    "VIEW_CHART": "عرض الرسم البياني",
+    "VIEW_TABLE": "عرض الجدول",
+    "COL_PERIOD": "اليوم",
+    "COL_COMPLETE": "كاملة",
+    "COL_INCOMPLETE": "غير مكتملة",
+    "COL_RATIO": "النسبة",
     "DOWNLOAD_CSV": "تنزيل CSV"
   },
   "COMMON": {

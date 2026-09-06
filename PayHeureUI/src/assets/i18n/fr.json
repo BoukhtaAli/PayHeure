@@ -1,9 +1,10 @@
 {
   "NAV": {
     "HOME": "Accueil",
-    "POINTAGE": "Pointage",
+    "POINTAGE": "Ajout pointage",
     "PAIE": "Calcul de paie",
     "ANOMALIES": "Pointages incomplets",
+    "ANALYTICS": "Statistiques",
     "TOGGLE": "Ouvrir/fermer la navigation"
   },
   "LANG": {
@@ -114,6 +115,31 @@
     "RESULT_EMPLOYEE": "Salarié",
     "RESULT_COL_DATE": "Date",
     "RESULT_COL_ENTRIES": "Entrées",
+    "DOWNLOAD_CSV": "Télécharger en CSV"
+  },
+  "ANALYTICS": {
+    "TITLE": "Statistiques des pointages",
+    "SUBTITLE": "Visualisez le nombre de pointages complets et incomplets ainsi que leur ratio, par jour, semaine ou mois, et naviguez librement entre les périodes.",
+    "GROUP_BY": "Regrouper par",
+    "PRESET_JOUR": "Jour",
+    "PRESET_SEMAINE": "Semaine",
+    "PRESET_MOIS": "Mois",
+    "PREVIOUS": "Période précédente",
+    "NEXT": "Période suivante",
+    "TODAY": "Aujourd'hui",
+    "SEARCH_ERROR": "Une erreur est survenue lors du calcul des statistiques.",
+    "RESULT_EMPTY": "Aucun pointage sur cette période.",
+    "STAT_COMPLETE": "Pointages complets",
+    "STAT_INCOMPLETE": "Pointages incomplets",
+    "STAT_RATIO": "Taux de complétude",
+    "CHART_TITLE": "Complets / incomplets par jour",
+    "CHART_TITLE_JOUR": "Complets / incomplets",
+    "VIEW_CHART": "Voir le graphique",
+    "VIEW_TABLE": "Voir en tableau",
+    "COL_PERIOD": "Jour",
+    "COL_COMPLETE": "Complets",
+    "COL_INCOMPLETE": "Incomplets",
+    "COL_RATIO": "Ratio",
     "DOWNLOAD_CSV": "Télécharger en CSV"
   },
   "COMMON": {

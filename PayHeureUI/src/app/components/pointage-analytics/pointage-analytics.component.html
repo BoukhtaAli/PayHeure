@@ -1,0 +1,116 @@
+<div class="container paie-page">
+  <app-breadcrumb [items]="breadcrumbItems"></app-breadcrumb>
+
+  <h1 class="page-title">{{ 'ANALYTICS.TITLE' | translate }}</h1>
+  <p class="page-subtitle">{{ 'ANALYTICS.SUBTITLE' | translate }}</p>
+
+  <!-- Un seul rang de contrôles, au-dessus de tout ce qu'il pilote (statistiques, jauge,
+       graphique) : pas de champ de date, un clic suffit à recharger immédiatement. La vue
+       (jour/semaine/mois) et la navigation dans le temps (précédent/suivant/aujourd'hui) sont
+       deux réglages indépendants : changer de vue garde la période où l'on est (voir
+       `selectionner`), naviguer la fait glisser dans le temps sans changer de vue (voir
+       `naviguer`). -->
+  <div class="controls-row">
+    <div class="btn-group preset-group" role="group" [attr.aria-label]="'ANALYTICS.GROUP_BY' | translate">
+      <button type="button" *ngFor="let p of presets" class="btn preset-btn"
+              [class.active]="preset === p" (click)="selectionner(p)">
+        {{ 'ANALYTICS.PRESET_' + p | translate }}
+      </button>
+    </div>
+
+    <div class="nav-group">
+      <!-- Flèches inversées en arabe (RTL) : "précédent" pointe vers la droite (le passé y est
+           lu), "suivant" vers la gauche — voir `rtl` dans le composant. -->
+      <button type="button" class="btn nav-btn" [attr.aria-label]="'ANALYTICS.PREVIOUS' | translate"
+              [title]="'ANALYTICS.PREVIOUS' | translate" (click)="naviguer(-1)">
+        <i class="fas" [ngClass]="rtl ? 'fa-chevron-right' : 'fa-chevron-left'" aria-hidden="true"></i>
+      </button>
+      <span class="period-label" dir="ltr">{{ libellePeriode }}</span>
+      <button type="button" class="btn nav-btn" [attr.aria-label]="'ANALYTICS.NEXT' | translate"
+              [title]="'ANALYTICS.NEXT' | translate" [disabled]="suivantDesactive" (click)="naviguer(1)">
+        <i class="fas" [ngClass]="rtl ? 'fa-chevron-left' : 'fa-chevron-right'" aria-hidden="true"></i>
+      </button>
+      <button type="button" class="btn btn-outline-accent btn-sm today-btn" (click)="allerAujourdhui()">
+        {{ 'ANALYTICS.TODAY' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="alert alert-danger mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="panel mt-3" *ngIf="result" [class.chargement]="loading">
+    <!-- Compteurs + jauge de ratio, complétés par le graphique ci-dessous quelle que soit la vue
+         (voir `construireGraphique` : comparaison à deux barres pour "jour", empilement jour par
+         jour pour "semaine"/"mois"). -->
+    <div class="row g-3 stat-row">
+      <div class="col-md-4">
+        <div class="stat-card">
+          <i class="fas fa-circle-check text-success" aria-hidden="true"></i>
+          <span class="stat-value">{{ result.totalSessionsCompletes }}</span>
+          <span class="stat-label">{{ 'ANALYTICS.STAT_COMPLETE' | translate }}</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <i class="fas fa-triangle-exclamation text-warning" aria-hidden="true"></i>
+          <span class="stat-value">{{ result.totalSessionsIncompletes }}</span>
+          <span class="stat-label">{{ 'ANALYTICS.STAT_INCOMPLETE' | translate }}</span>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="meter-card">
+          <span class="stat-label">{{ 'ANALYTICS.STAT_RATIO' | translate }}</span>
+          <span class="meter-value" dir="ltr">{{ result.ratioCompletionGlobal }}%</span>
+          <div class="meter-track" role="progressbar" [attr.aria-valuenow]="result.ratioCompletionGlobal"
+               aria-valuemin="0" aria-valuemax="100" [attr.aria-label]="'ANALYTICS.STAT_RATIO' | translate">
+            <div class="meter-fill" [style.width.%]="result.ratioCompletionGlobal"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p *ngIf="periodes.length === 0" class="text-muted mb-0 mt-4">{{ 'ANALYTICS.RESULT_EMPTY' | translate }}</p>
+
+    <ng-container *ngIf="periodes.length > 0">
+      <div class="panel-header mt-4">
+        <h2 class="panel-title mb-0">{{ titreGraphiqueKey | translate }}</h2>
+        <!-- Bascule graphique / tableau : équivalent accessible de la représentation visuelle
+             (voir le skill dataviz, une jumelle "table view" est requise pour tout graphique). -->
+        <button type="button" class="btn btn-outline-accent btn-sm" (click)="afficherTableau = !afficherTableau">
+          <i class="fas" [ngClass]="afficherTableau ? 'fa-chart-column' : 'fa-table'" aria-hidden="true"></i>
+          {{ (afficherTableau ? 'ANALYTICS.VIEW_CHART' : 'ANALYTICS.VIEW_TABLE') | translate }}
+        </button>
+      </div>
+
+      <div class="chart-wrapper" *ngIf="!afficherTableau">
+        <canvas baseChart [type]="barChartType" [data]="barChartData" [options]="barChartOptions"></canvas>
+      </div>
+
+      <table class="table table-hover results-table mt-2" *ngIf="afficherTableau">
+        <thead>
+          <tr>
+            <th>{{ 'ANALYTICS.COL_PERIOD' | translate }}</th>
+            <th>{{ 'ANALYTICS.COL_COMPLETE' | translate }}</th>
+            <th>{{ 'ANALYTICS.COL_INCOMPLETE' | translate }}</th>
+            <th>{{ 'ANALYTICS.COL_RATIO' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let periode of periodes">
+            <td dir="ltr">{{ libelleJour(periode.dateDebut) }}</td>
+            <td>{{ periode.sessionsCompletes }}</td>
+            <td>{{ periode.sessionsIncompletes }}</td>
+            <td dir="ltr">{{ periode.ratioCompletion }}%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="text-end mt-2">
+        <button type="button" class="btn btn-outline-accent btn-sm" (click)="telechargerCsv()">
+          <i class="fas fa-download" aria-hidden="true"></i>
+          {{ 'ANALYTICS.DOWNLOAD_CSV' | translate }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

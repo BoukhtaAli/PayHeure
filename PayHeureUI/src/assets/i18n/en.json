@@ -1,9 +1,10 @@
 {
   "NAV": {
     "HOME": "Home",
-    "POINTAGE": "Time clock",
+    "POINTAGE": "Add record",
     "PAIE": "Payroll",
     "ANOMALIES": "Incomplete records",
+    "ANALYTICS": "Analytics",
     "TOGGLE": "Toggle navigation"
   },
   "LANG": {
@@ -114,6 +115,31 @@
     "RESULT_EMPLOYEE": "Employee",
     "RESULT_COL_DATE": "Date",
     "RESULT_COL_ENTRIES": "Entries",
+    "DOWNLOAD_CSV": "Download as CSV"
+  },
+  "ANALYTICS": {
+    "TITLE": "Time clock analytics",
+    "SUBTITLE": "Visualize the number of complete and incomplete time clock records and their ratio, by day, week or month, and freely browse between periods.",
+    "GROUP_BY": "Group by",
+    "PRESET_JOUR": "Day",
+    "PRESET_SEMAINE": "Week",
+    "PRESET_MOIS": "Month",
+    "PREVIOUS": "Previous period",
+    "NEXT": "Next period",
+    "TODAY": "Today",
+    "SEARCH_ERROR": "An error occurred while computing the statistics.",
+    "RESULT_EMPTY": "No time clock records for this period.",
+    "STAT_COMPLETE": "Complete records",
+    "STAT_INCOMPLETE": "Incomplete records",
+    "STAT_RATIO": "Completion rate",
+    "CHART_TITLE": "Complete / incomplete per day",
+    "CHART_TITLE_JOUR": "Complete / incomplete",
+    "VIEW_CHART": "View chart",
+    "VIEW_TABLE": "View table",
+    "COL_PERIOD": "Day",
+    "COL_COMPLETE": "Complete",
+    "COL_INCOMPLETE": "Incomplete",
+    "COL_RATIO": "Ratio",
     "DOWNLOAD_CSV": "Download as CSV"
   },
   "COMMON": {

@@ -7,7 +7,7 @@ import { Component, HostListener } from '@angular/core';
   styleUrls: ['./go-to-top.component.css']
 })
 export class GoToTopComponent {
-  isVisible: boolean = true;
+  isVisible: boolean = false;
 
   @HostListener('window:scroll')
   onWindowScroll(): void {

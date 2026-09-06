@@ -5,12 +5,14 @@ import { PaieCalculComponent } from './components/paie-calcul/paie-calcul.compon
 import { PaieDetailComponent } from './components/paie-detail/paie-detail.component';
 import { PointageAjoutComponent } from './components/pointage-ajout/pointage-ajout.component';
 import { PointageAnomaliesComponent } from './components/pointage-anomalies/pointage-anomalies.component';
+import { PointageAnalyticsComponent } from './components/pointage-analytics/pointage-analytics.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'pointage', component: PointageAjoutComponent },
   { path: 'anomalies', component: PointageAnomaliesComponent },
+  { path: 'analytics', component: PointageAnalyticsComponent },
   { path: 'paie', component: PaieCalculComponent },
   { path: 'paie/detail/:employeeId', component: PaieDetailComponent },
   { path: '**', redirectTo: '/home' }

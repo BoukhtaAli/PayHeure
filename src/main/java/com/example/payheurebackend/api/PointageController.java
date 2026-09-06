@@ -1,9 +1,12 @@
 package com.example.payheurebackend.api;
 
+import com.example.payheurebackend.dto.PointageAnalyticsRequest;
+import com.example.payheurebackend.dto.PointageAnalyticsResponse;
 import com.example.payheurebackend.dto.PointageAnomalieRequest;
 import com.example.payheurebackend.dto.PointageAnomalieResponse;
 import com.example.payheurebackend.dto.PointageCreateRequest;
 import com.example.payheurebackend.dto.PointageResponse;
+import com.example.payheurebackend.service.PointageAnalyticsService;
 import com.example.payheurebackend.service.PointageAnomalieService;
 import com.example.payheurebackend.service.PointageService;
 import jakarta.validation.Valid;
@@ -25,6 +28,7 @@ public class PointageController {
 
     private final PointageService pointageService;
     private final PointageAnomalieService pointageAnomalieService;
+    private final PointageAnalyticsService pointageAnalyticsService;
 
     /** Ajoute un badgeage pour le salarié désigné dans la requête. */
     @PostMapping
@@ -39,5 +43,14 @@ public class PointageController {
     @PostMapping("/anomalies")
     public List<PointageAnomalieResponse> anomalies(@Valid @RequestBody PointageAnomalieRequest request) {
         return pointageAnomalieService.lister(request);
+    }
+
+    /**
+     * Statistiques de complétude des pointages (nombre de sessions complètes/incomplètes et
+     * ratio), tous salariés confondus, agrégées par jour, semaine ou mois sur la période demandée.
+     */
+    @PostMapping("/analytics")
+    public PointageAnalyticsResponse analytics(@Valid @RequestBody PointageAnalyticsRequest request) {
+        return pointageAnalyticsService.calculer(request);
     }
 }

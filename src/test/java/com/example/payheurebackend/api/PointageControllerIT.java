@@ -188,4 +188,56 @@ class PointageControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }
+
+    @Test
+    void analytics_pointagesCompletsEtIncomplets_calculeLeRatioParJour() throws Exception {
+        Employee amel = saveEmployee();
+        punch(amel, LocalDateTime.of(2026, 1, 5, 8, 0));
+        punch(amel, LocalDateTime.of(2026, 1, 5, 12, 0));
+        punch(amel, LocalDateTime.of(2026, 1, 5, 14, 0)); // orphelin : anomalie
+
+        Map<String, Object> request = Map.of(
+                "dateDebut", "2026-01-05T00:00:00",
+                "dateFin", "2026-01-05T23:59:59",
+                "granularite", "JOUR");
+
+        mockMvc.perform(post("/api/pointages/analytics")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.granularite").value("JOUR"))
+                .andExpect(jsonPath("$.periodes.length()").value(1))
+                .andExpect(jsonPath("$.periodes[0].dateDebut").value("2026-01-05"))
+                .andExpect(jsonPath("$.periodes[0].sessionsCompletes").value(1))
+                .andExpect(jsonPath("$.periodes[0].sessionsIncompletes").value(1))
+                .andExpect(jsonPath("$.periodes[0].ratioCompletion").value(50.0))
+                .andExpect(jsonPath("$.totalSessionsCompletes").value(1))
+                .andExpect(jsonPath("$.totalSessionsIncompletes").value(1))
+                .andExpect(jsonPath("$.ratioCompletionGlobal").value(50.0));
+    }
+
+    @Test
+    void analytics_periodeIncoherente_retourne400() throws Exception {
+        Map<String, Object> request = Map.of(
+                "dateDebut", "2026-01-31T00:00:00",
+                "dateFin", "2026-01-01T00:00:00",
+                "granularite", "JOUR");
+
+        mockMvc.perform(post("/api/pointages/analytics")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("La date de fin ne peut pas être antérieure à la date de début"));
+    }
+
+    @Test
+    void analytics_champsObligatoiresManquants_retourne400() throws Exception {
+        mockMvc.perform(post("/api/pointages/analytics")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.dateDebut").value("La date de début est obligatoire"))
+                .andExpect(jsonPath("$.fieldErrors.dateFin").value("La date de fin est obligatoire"))
+                .andExpect(jsonPath("$.fieldErrors.granularite").value("La granularité est obligatoire"));
+    }
 }

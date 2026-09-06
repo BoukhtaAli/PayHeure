@@ -1,0 +1,211 @@
+/* Mêmes classes que pointage-anomalies.component.css (styles scopés par composant, non
+   partageables directement en Angular) : page, panneaux, tableau de résultats. */
+
+.paie-page {
+  padding: 40px 20px;
+}
+
+.page-title {
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.page-subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}
+
+.panel {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: opacity 0.15s ease;
+}
+
+/* Rechargement d'un préréglage : le panneau garde son dernier rendu, en opacité réduite, plutôt
+   qu'un flash vide ou un saut de mise en page (voir interaction.md du skill dataviz). */
+.panel.chargement {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.btn-outline-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-text-dark);
+}
+
+.btn-outline-accent:hover {
+  background-color: var(--color-bg);
+  border-color: var(--color-accent);
+  color: var(--color-text-dark);
+}
+
+/* Rang de contrôles : vue (jour/semaine/mois) à gauche, navigation dans le temps à droite. */
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Vue (jour/semaine/mois) : un seul rang de boutons, jamais de filtre par date. */
+.preset-group {
+  display: flex;
+  gap: 8px;
+}
+
+/* Navigation dans le temps : précédent / libellé de la période / suivant / retour à aujourd'hui. */
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--color-text-dark);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background-color: var(--color-bg);
+}
+
+.nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.period-label {
+  min-width: 160px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.today-btn {
+  margin-inline-start: 4px;
+}
+
+.preset-btn {
+  background-color: #fff;
+  border: 1px solid var(--color-primary);
+  color: var(--color-text-dark);
+  font-weight: 600;
+  border-radius: 8px !important;
+}
+
+.preset-btn:hover {
+  background-color: var(--color-bg);
+}
+
+.preset-btn.active {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+/* Compteurs (complets/incomplets) et jauge de ratio, en tête du panneau de résultats. */
+.stat-card,
+.meter-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: var(--color-bg);
+  text-align: center;
+  height: 100%;
+  justify-content: center;
+}
+
+.stat-card i {
+  font-size: 24px;
+}
+
+.stat-value,
+.meter-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-dark);
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+/* Jauge de ratio : même teinte (vert "bon") pour le remplissage et, en clair, pour la piste -
+   l'état se lit sur toute la barre, pas seulement sur le remplissage (voir marks-and-anatomy.md
+   du skill dataviz). */
+.meter-track {
+  width: 100%;
+  max-width: 220px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: rgba(12, 163, 12, 0.15);
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  border-radius: 5px;
+  background-color: #0ca30c;
+  transition: width 0.3s ease;
+}
+
+/* Hauteur fixe incluant la bande d'axe des jours (voir anti-patterns.md du skill dataviz : un
+   conteneur qui exclut l'axe force un défilement interne, jamais souhaitable ici). */
+.chart-wrapper {
+  position: relative;
+  height: 320px;
+}
+
+.results-table thead {
+  background-color: var(--color-primary);
+}
+
+.results-table th,
+.results-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.results-table tbody td {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.results-table tbody tr:hover {
+  background-color: var(--color-bg);
+}
