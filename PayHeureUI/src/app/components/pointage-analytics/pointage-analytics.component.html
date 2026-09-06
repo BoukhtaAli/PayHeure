@@ -72,8 +72,7 @@
     <p *ngIf="periodes.length === 0" class="text-muted mb-0 mt-4">{{ 'ANALYTICS.RESULT_EMPTY' | translate }}</p>
 
     <ng-container *ngIf="periodes.length > 0">
-      <div class="panel-header mt-4">
-        <h2 class="panel-title mb-0">{{ titreGraphiqueKey | translate }}</h2>
+      <div class="panel-header mt-4 justify-content-end">
         <!-- Bascule graphique / tableau : équivalent accessible de la représentation visuelle
              (voir le skill dataviz, une jumelle "table view" est requise pour tout graphique). -->
         <button type="button" class="btn btn-outline-accent btn-sm" (click)="afficherTableau = !afficherTableau">

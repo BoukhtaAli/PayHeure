@@ -132,8 +132,6 @@
     "STAT_COMPLETE": "تسجيلات كاملة",
     "STAT_INCOMPLETE": "تسجيلات غير مكتملة",
     "STAT_RATIO": "نسبة الاكتمال",
-    "CHART_TITLE": "الكاملة / غير المكتملة حسب اليوم",
-    "CHART_TITLE_JOUR": "الكاملة / غير المكتملة",
     "VIEW_CHART": "عرض الرسم البياني",
     "VIEW_TABLE": "عرض الجدول",
     "COL_PERIOD": "اليوم",

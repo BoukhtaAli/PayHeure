@@ -132,8 +132,6 @@
     "STAT_COMPLETE": "Pointages complets",
     "STAT_INCOMPLETE": "Pointages incomplets",
     "STAT_RATIO": "Taux de complétude",
-    "CHART_TITLE": "Complets / incomplets par jour",
-    "CHART_TITLE_JOUR": "Complets / incomplets",
     "VIEW_CHART": "Voir le graphique",
     "VIEW_TABLE": "Voir en tableau",
     "COL_PERIOD": "Jour",

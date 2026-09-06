@@ -159,7 +159,19 @@ export class PointageAnalyticsComponent implements OnInit, OnDestroy {
         y: { stacked: true, beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#e1e0d9' } }
       },
       plugins: {
-        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, padding: 16 } },
+        legend: {
+          position: 'top',
+          labels: { usePointStyle: true, boxWidth: 8, padding: 16 },
+          // Les items de légende sont cliquables (ils filtrent la série complète/incomplète
+          // affichée) : sans ceci Chart.js laisse le curseur par défaut, rien n'indique qu'ils
+          // sont interactifs.
+          onHover: (event) => {
+            if (event.native?.target instanceof HTMLElement) event.native.target.style.cursor = 'pointer';
+          },
+          onLeave: (event) => {
+            if (event.native?.target instanceof HTMLElement) event.native.target.style.cursor = 'default';
+          }
+        },
         tooltip: { mode: 'index', intersect: false }
       }
     };
@@ -245,11 +257,6 @@ export class PointageAnalyticsComponent implements OnInit, OnDestroy {
     if (this.preset === 'MOIS') return debut.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
     if (this.preset === 'SEMAINE') return `${jourMoisAnnee(debut)} – ${jourMoisAnnee(fin)}`;
     return jourMoisAnnee(debut);
-  }
-
-  /** Clé i18n du titre au-dessus du graphique/tableau : comparaison à deux barres en vue "jour", évolution jour par jour sinon. */
-  get titreGraphiqueKey(): string {
-    return this.preset === 'JOUR' ? 'ANALYTICS.CHART_TITLE_JOUR' : 'ANALYTICS.CHART_TITLE';
   }
 
   get periodes(): PointageAnalyticsPeriode[] {

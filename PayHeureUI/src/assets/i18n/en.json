@@ -132,8 +132,6 @@
     "STAT_COMPLETE": "Complete records",
     "STAT_INCOMPLETE": "Incomplete records",
     "STAT_RATIO": "Completion rate",
-    "CHART_TITLE": "Complete / incomplete per day",
-    "CHART_TITLE_JOUR": "Complete / incomplete",
     "VIEW_CHART": "View chart",
     "VIEW_TABLE": "View table",
     "COL_PERIOD": "Day",
