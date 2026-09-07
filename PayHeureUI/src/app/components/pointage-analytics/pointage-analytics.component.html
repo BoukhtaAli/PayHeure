@@ -38,7 +38,7 @@
 
   <div class="alert alert-danger mt-3" *ngIf="errorMessageKey || errorMessage">{{ errorMessageKey ? (errorMessageKey | translate) : errorMessage }}</div>
 
-  <div class="panel mt-3" *ngIf="result" [class.chargement]="loading">
+  <div class="panel mt-2" *ngIf="result" [class.chargement]="loading">
     <!-- Compteurs + jauge de ratio, complétés par le graphique ci-dessous quelle que soit la vue
          (voir `construireGraphique` : comparaison à deux barres pour "jour", empilement jour par
          jour pour "semaine"/"mois"). -->
@@ -72,7 +72,7 @@
     <p *ngIf="periodes.length === 0" class="text-muted mb-0 mt-4">{{ 'ANALYTICS.RESULT_EMPTY' | translate }}</p>
 
     <ng-container *ngIf="periodes.length > 0">
-      <div class="panel-header mt-4 justify-content-end">
+      <div class="panel-header mt-3 justify-content-end">
         <!-- Bascule graphique / tableau : équivalent accessible de la représentation visuelle
              (voir le skill dataviz, une jumelle "table view" est requise pour tout graphique). -->
         <button type="button" class="btn btn-outline-accent btn-sm" (click)="afficherTableau = !afficherTableau">

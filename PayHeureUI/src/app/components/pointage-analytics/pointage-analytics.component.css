@@ -2,7 +2,7 @@
    partageables directement en Angular) : page, panneaux, tableau de résultats. */
 
 .paie-page {
-  padding: 40px 20px;
+  padding: 18px 20px 40px;
 }
 
 .page-title {
@@ -10,15 +10,19 @@
   color: var(--color-text-dark);
 }
 
+/* Marge resserrée (24px sur les autres écrans, voir pointage-anomalies.component.css) : cette
+   page empile plus d'éléments avant le graphique (contrôles, compteurs) que les autres écrans, qui
+   n'ont qu'un formulaire ; sans ça, le graphique dépasse le bas d'un écran 1366×768 courant et
+   n'est visible qu'après défilement, alors qu'il est le contenu principal de l'écran. */
 .page-subtitle {
   color: var(--color-text-muted);
-  margin-bottom: 24px;
+  margin-bottom: 8px;
 }
 
 .panel {
   background-color: #fff;
   border-radius: 10px;
-  padding: 24px;
+  padding: 20px 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: opacity 0.15s ease;
 }
@@ -42,7 +46,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .btn-outline-accent {
@@ -140,7 +144,7 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 20px;
+  padding: 14px 20px;
   border-radius: 10px;
   background-color: var(--color-bg);
   text-align: center;
@@ -184,10 +188,13 @@
 }
 
 /* Hauteur fixe incluant la bande d'axe des jours (voir anti-patterns.md du skill dataviz : un
-   conteneur qui exclut l'axe force un défilement interne, jamais souhaitable ici). */
+   conteneur qui exclut l'axe force un défilement interne, jamais souhaitable ici). 200px, pas
+   320px : avec les compteurs et la jauge au-dessus, 320px poussait le bas du graphique derrière le
+   footer (fixe en bas de l'écran, voir footer.component.css) sur un écran 1366×768 courant — non
+   seulement hors champ, mais recouvert par le footer même après défilement jusqu'en bas. */
 .chart-wrapper {
   position: relative;
-  height: 320px;
+  height: 200px;
 }
 
 .results-table thead {
