@@ -6,9 +6,9 @@ import java.util.*;
 /**
  * Script jetable (pas un test, pas commité dans le suivi normal du build) : peuple
  * C:/PayHeure/payheureDb.accdb avec 3 salariés fictifs et leurs badgeages du 1er septembre 2026
- * à aujourd'hui, jours ouvrés uniquement, pour tester l'écran d'analytics. Idempotent : relancer
- * le script supprime d'abord les données précédemment injectées par ce même script (matricules
- * TESTAN1..3) avant de les recréer.
+ * à aujourd'hui, tous les jours (weekends inclus), pour tester l'écran d'analytics. Idempotent :
+ * relancer le script supprime d'abord les données précédemment injectées par ce même script
+ * (matricules TESTAN1..3) avant de les recréer.
  */
 public class SeedAnalyticsData {
 
@@ -51,22 +51,22 @@ public class SeedAnalyticsData {
             }
             System.out.println("Salariés créés : " + Arrays.toString(ids));
 
-            // Jours ouvrés du 1er septembre 2026 à aujourd'hui (borne haute = aujourd'hui, réelle
-            // date système, pas figée sur 2026-09-07, au cas où le script serait relancé plus tard).
+            // Tous les jours du 1er septembre 2026 à aujourd'hui, weekends inclus (borne haute =
+            // aujourd'hui, réelle date système, pas figée sur 2026-09-07, au cas où le script
+            // serait relancé plus tard).
             LocalDate debut = LocalDate.of(2026, 9, 1);
             LocalDate fin = LocalDate.now();
-            List<LocalDate> joursOuvres = new ArrayList<>();
+            List<LocalDate> jours = new ArrayList<>();
             for (LocalDate d = debut; !d.isAfter(fin); d = d.plusDays(1)) {
-                int jourSemaine = d.getDayOfWeek().getValue(); // 1 = lundi ... 7 = dimanche
-                if (jourSemaine <= 5) joursOuvres.add(d);
+                jours.add(d);
             }
-            System.out.println("Jours ouvrés couverts : " + joursOuvres);
+            System.out.println("Jours couverts : " + jours);
 
             try (PreparedStatement ins = cn.prepareStatement(
                     "INSERT INTO pointage (employee_id, date_heure) VALUES (?, ?)")) {
                 Random random = new Random(42); // graine fixe : jeu de données reproductible
                 int compteur = 0;
-                for (LocalDate jour : joursOuvres) {
+                for (LocalDate jour : jours) {
                     for (long employeeId : ids) {
                         // Entrée le matin, toujours présente.
                         compteur += badge(ins, employeeId, jour, 8, random.nextInt(20));
