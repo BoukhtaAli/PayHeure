@@ -55,7 +55,7 @@
       </div>
     </form>
 
-    <div class="alert alert-danger mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="alert alert-danger mt-3" *ngIf="errorMessageKey || errorMessage">{{ errorMessageKey ? (errorMessageKey | translate) : errorMessage }}</div>
   </div>
 
   <div class="panel mt-4" *ngIf="searched">

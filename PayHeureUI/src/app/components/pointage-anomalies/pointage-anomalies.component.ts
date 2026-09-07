@@ -81,7 +81,19 @@ export class PointageAnomaliesComponent {
 
   results: PointageAnomalieResponse[] = [];
   searched = false;
+
+  /**
+   * Message d'erreur brut (déjà traduit côté serveur, voir `errorMessageKey`), affiché tel quel.
+   * `errorMessageKey` a priorité côté template : les deux ne sont jamais renseignés en même temps.
+   */
   errorMessage: string | null = null;
+
+  /**
+   * Clé i18n de l'erreur à afficher, traduite dans le template via le pipe `translate` — donc
+   * réactive à un changement de langue, contrairement à un texte déjà résolu par
+   * `translate.instant()` et stocké tel quel (piège dans lequel `errorMessage` ne doit pas tomber).
+   */
+  errorMessageKey: string | null = null;
 
   /**
    * Une ligne par journée en anomalie, tous salariés confondus, triée par date décroissante (voir
@@ -142,6 +154,7 @@ export class PointageAnomaliesComponent {
     }
 
     this.errorMessage = null;
+    this.errorMessageKey = null;
     const { dateDebut, heureDebut, dateFin, heureFin } = this.form.value;
 
     this.pointageAnomalieService.lister({
@@ -170,7 +183,12 @@ export class PointageAnomaliesComponent {
         // pas traduit, contrairement au reste de l'écran. Le seul cas facilement prévisible
         // (période invalide) est intercepté avant l'appel par `periodValidator` ; ce message
         // générique ne sert plus que pour les erreurs réellement inattendues côté serveur.
-        this.errorMessage = error?.error?.message ?? this.translate.instant('ANOMALIES.SEARCH_ERROR');
+        // `errorMessage` (texte déjà résolu) sert seulement à ce cas brut venu du backend ;
+        // `errorMessageKey` (clé i18n) au message générique ci-dessous, traduit dans le template
+        // via le pipe `translate` pour rester à jour si l'utilisateur change de langue ensuite.
+        const messageBrut = error?.error?.message;
+        this.errorMessage = messageBrut ?? null;
+        this.errorMessageKey = messageBrut ? null : 'ANOMALIES.SEARCH_ERROR';
       }
     });
   }

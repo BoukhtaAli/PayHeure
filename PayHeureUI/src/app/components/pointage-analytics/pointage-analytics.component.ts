@@ -115,7 +115,18 @@ export class PointageAnalyticsComponent implements OnInit, OnDestroy {
 
   result: PointageAnalyticsResponse | null = null;
   loading = false;
+  /**
+   * Message d'erreur brut (déjà traduit côté serveur, voir `errorMessageKey`), affiché tel quel.
+   * `errorMessageKey` a priorité côté template : les deux ne sont jamais renseignés en même temps.
+   */
   errorMessage: string | null = null;
+
+  /**
+   * Clé i18n de l'erreur à afficher, traduite dans le template via le pipe `translate` — donc
+   * réactive à un changement de langue, contrairement à un texte déjà résolu par
+   * `translate.instant()` et stocké tel quel (piège dans lequel `errorMessage` ne doit pas tomber).
+   */
+  errorMessageKey: string | null = null;
 
   /** Bascule entre le graphique et son équivalent accessible (tableau), voir `anti-patterns.md`. */
   afficherTableau = false;
@@ -266,6 +277,7 @@ export class PointageAnalyticsComponent implements OnInit, OnDestroy {
   private charger(): void {
     this.loading = true;
     this.errorMessage = null;
+    this.errorMessageKey = null;
     const { debut, fin } = bornes(this.preset, this.ancre);
     const granularite: Granularite = 'JOUR';
 
@@ -285,7 +297,13 @@ export class PointageAnalyticsComponent implements OnInit, OnDestroy {
         // il n'y a plus rien de fiable à montrer.
         this.result = null;
         this.loading = false;
-        this.errorMessage = error?.error?.message ?? this.translate.instant('ANALYTICS.SEARCH_ERROR');
+        // Le backend ne répond qu'en français (voir GlobalExceptionHandler) et ce message n'est
+        // pas traduit ; `errorMessage` (texte déjà résolu) sert seulement à ce cas brut venu du
+        // backend, `errorMessageKey` (clé i18n) au message générique, traduit dans le template via
+        // le pipe `translate` pour rester à jour si l'utilisateur change de langue ensuite.
+        const messageBrut = error?.error?.message;
+        this.errorMessage = messageBrut ?? null;
+        this.errorMessageKey = messageBrut ? null : 'ANALYTICS.SEARCH_ERROR';
       }
     });
   }

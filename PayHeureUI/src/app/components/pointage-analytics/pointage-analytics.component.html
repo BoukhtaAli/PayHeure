@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  <div class="alert alert-danger mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="alert alert-danger mt-3" *ngIf="errorMessageKey || errorMessage">{{ errorMessageKey ? (errorMessageKey | translate) : errorMessage }}</div>
 
   <div class="panel mt-3" *ngIf="result" [class.chargement]="loading">
     <!-- Compteurs + jauge de ratio, complétés par le graphique ci-dessous quelle que soit la vue

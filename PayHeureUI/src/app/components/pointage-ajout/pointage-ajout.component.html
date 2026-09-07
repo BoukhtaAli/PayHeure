@@ -57,7 +57,7 @@
           </form>
         </ng-container>
 
-        <div class="alert alert-danger mt-3" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="alert alert-danger mt-3" *ngIf="errorMessageKey || errorMessage">{{ errorMessageKey ? (errorMessageKey | translate) : errorMessage }}</div>
 
         <div class="mt-4" *ngIf="ajoutes.length > 0">
           <h3 class="panel-title">{{ 'POINTAGE.ADDED_TITLE' | translate }}</h3>

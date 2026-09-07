@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
 import { Options } from 'flatpickr/dist/types/options';
 import { Employee } from '../../models/Employee';
 import { Pointage } from '../../models/Pointage';
@@ -45,7 +44,19 @@ export class PointageAjoutComponent {
   selectedEmployee: Employee | null = null;
   ajoutes: Pointage[] = [];
   submitting = false;
+
+  /**
+   * Message d'erreur brut (déjà traduit côté serveur, voir `errorMessageKey`), affiché tel quel.
+   * `errorMessageKey` a priorité côté template : les deux ne sont jamais renseignés en même temps.
+   */
   errorMessage: string | null = null;
+
+  /**
+   * Clé i18n de l'erreur à afficher, traduite dans le template via le pipe `translate` — donc
+   * réactive à un changement de langue, contrairement à un texte déjà résolu par
+   * `translate.instant()` et stocké tel quel (piège dans lequel `errorMessage` ne doit pas tomber).
+   */
+  errorMessageKey: string | null = null;
 
   readonly form: FormGroup = this.fb.group({
     date: ['', [Validators.required, Validators.pattern(DATE_PATTERN)]],
@@ -54,8 +65,7 @@ export class PointageAjoutComponent {
 
   constructor(
     private readonly fb: FormBuilder,
-    private readonly pointageService: PointageService,
-    private readonly translate: TranslateService
+    private readonly pointageService: PointageService
   ) {}
 
   /** Changer de salarié repart d'une liste de pointages ajoutés vide : elle est propre à celui affiché. */
@@ -66,6 +76,7 @@ export class PointageAjoutComponent {
     }
     this.selectedEmployee = employee;
     this.errorMessage = null;
+    this.errorMessageKey = null;
   }
 
   ajouter(): void {
@@ -76,6 +87,7 @@ export class PointageAjoutComponent {
 
     this.submitting = true;
     this.errorMessage = null;
+    this.errorMessageKey = null;
     const { date, heure } = this.form.value;
 
     this.pointageService.creer({
@@ -92,8 +104,12 @@ export class PointageAjoutComponent {
       error: error => {
         this.submitting = false;
         // Le backend ne répond qu'en français (voir GlobalExceptionHandler) et ce message n'est
-        // pas traduit ; seul le cas générique (erreur réellement inattendue) tombe sur la clé i18n.
-        this.errorMessage = error?.error?.message ?? this.translate.instant('POINTAGE.SAVE_ERROR');
+        // pas traduit ; `errorMessage` (texte déjà résolu) sert seulement à ce cas brut venu du
+        // backend, `errorMessageKey` (clé i18n) au message générique, traduit dans le template via
+        // le pipe `translate` pour rester à jour si l'utilisateur change de langue ensuite.
+        const messageBrut = error?.error?.message;
+        this.errorMessage = messageBrut ?? null;
+        this.errorMessageKey = messageBrut ? null : 'POINTAGE.SAVE_ERROR';
       }
     });
   }
