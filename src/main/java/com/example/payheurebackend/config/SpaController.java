@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class SpaController {
 
-    @GetMapping({"/", "/home", "/pointage", "/anomalies", "/paie"})
+    @GetMapping({"/", "/home", "/pointage", "/anomalies", "/paie", "/analytics"})
     public String forwardToIndex() {
         return "forward:/index.html";
     }
