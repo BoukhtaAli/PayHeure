@@ -1,6 +1,16 @@
 spring:
   application:
     name: payheure-backend
+  servlet:
+    encoding:
+      # Certains assets tiers (ex. flag-icons.min.css) n'ont ni BOM ni "@charset" en tête de
+      # fichier ; sans ça, le navigateur retombe sur Windows-1252 pour lire le fichier servi en
+      # "Content-Type: text/css" (sans paramètre charset), et un caractère UTF-8 multioctet comme
+      # l'espace insécable (0xC2 0xA0) est alors lu comme deux caractères latin-1 ("Â" + espace).
+      # Forcer charset=UTF-8 sur toutes les réponses évite ce mojibake pour cet asset et pour
+      # tout autre fichier statique qui ne déclarerait pas son encodage.
+      charset: UTF-8
+      force: true
   datasource:
     # Adapter ce chemin à l'emplacement du fichier .accdb sur le poste client.
     url: jdbc:ucanaccess://C:/PayHeure/payheureDb.accdb;newDatabaseVersion=V2010
