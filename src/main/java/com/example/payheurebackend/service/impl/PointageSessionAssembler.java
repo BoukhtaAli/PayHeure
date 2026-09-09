@@ -33,7 +33,9 @@ public class PointageSessionAssembler {
      * Un badgeage sans sortie correspondante (nombre impair de badgeages ce jour-là, oubli de
      * pointer par ex.) est renvoyé comme anomalie et exclu du total travaillé. Seule la portion
      * d'une session qui chevauche {@code [fenetreDebut, fenetreFin]} est restituée ; les sessions
-     * qui ne chevauchent pas du tout la fenêtre demandée sont omises.
+     * qui ne chevauchent pas du tout la fenêtre demandée sont omises. Une session dont l'entrée
+     * et la sortie tombent à la même date/heure est conservée si cet instant est dans la fenêtre,
+     * avec une durée de 0 minute.
      */
     public List<PointageSessionResponse> construire(
             List<Pointage> pointages, LocalDateTime fenetreDebut, LocalDateTime fenetreFin) {
@@ -58,7 +60,17 @@ public class PointageSessionAssembler {
                 LocalDateTime sortie = dayPointages.get(i + 1).getDateHeure();
                 LocalDateTime debutChevauchement = entree.isAfter(fenetreDebut) ? entree : fenetreDebut;
                 LocalDateTime finChevauchement = sortie.isBefore(fenetreFin) ? sortie : fenetreFin;
-                if (!debutChevauchement.isBefore(finChevauchement)) {
+                // Une session instantanée (deux badgeages à la même date/heure, ex. double bip à
+                // la borne ou saisie deux fois du même pointage) ne chevauche aucun intervalle au
+                // sens strict : c'est son instant qu'il faut situer dans la fenêtre, pas son
+                // chevauchement avec elle. Sans cette distinction elle serait écartée comme une
+                // session hors période, et le salarié disparaîtrait de tous les écrans (calcul de
+                // paie, anomalies, analytics, recherche par période) alors que ses badgeages sont
+                // bien en base. Elle est donc restituée avec une durée de 0 minute.
+                boolean dansLaFenetre = entree.equals(sortie)
+                        ? !entree.isBefore(fenetreDebut) && !entree.isAfter(fenetreFin)
+                        : debutChevauchement.isBefore(finChevauchement);
+                if (!dansLaFenetre) {
                     continue; // session hors de la fenêtre demandée (aucun chevauchement)
                 }
 

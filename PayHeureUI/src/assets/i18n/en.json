@@ -51,7 +51,7 @@
     "HOURLY_RATE_PLACEHOLDER": "e.g. 35.00 DH",
     "CALCULATE": "Calculate",
     "CALCUL_ERROR": "An error occurred during the calculation.",
-    "NO_POINTAGE_IN_PERIOD": "None of the selected employees have a time record for the chosen period.",
+    "NO_POINTAGE_IN_PERIOD": "No employee has a time record for the chosen period.",
     "INVALID_PERIOD": "The end date cannot be earlier than the start date.",
     "FIELD_REQUIRED": "Required field.",
     "FIELD_INVALID_DATE": "Invalid date (dd-MM-yyyy).",

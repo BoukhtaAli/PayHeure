@@ -51,7 +51,7 @@
     "HOURLY_RATE_PLACEHOLDER": "مثال: 35.00 درهم",
     "CALCULATE": "احتساب",
     "CALCUL_ERROR": "حدث خطأ أثناء الاحتساب.",
-    "NO_POINTAGE_IN_PERIOD": "لا يتوفر أي تسجيل حضور للموظفين المحددين خلال الفترة المختارة.",
+    "NO_POINTAGE_IN_PERIOD": "لا يتوفر أي تسجيل حضور لأي موظف خلال الفترة المختارة.",
     "INVALID_PERIOD": "لا يمكن أن يكون تاريخ النهاية سابقا لتاريخ البداية.",
     "FIELD_REQUIRED": "حقل إلزامي.",
     "FIELD_INVALID_DATE": "تاريخ غير صالح (dd-MM-yyyy).",

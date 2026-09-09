@@ -51,7 +51,7 @@
     "HOURLY_RATE_PLACEHOLDER": "ex. 35.00 DH",
     "CALCULATE": "Calculer",
     "CALCUL_ERROR": "Une erreur est survenue lors du calcul.",
-    "NO_POINTAGE_IN_PERIOD": "Aucun des salariés sélectionnés n'a de pointage sur la période choisie.",
+    "NO_POINTAGE_IN_PERIOD": "Aucun salarié n'a de pointage sur la période choisie.",
     "INVALID_PERIOD": "La date de fin ne peut pas être antérieure à la date de début.",
     "FIELD_REQUIRED": "Champ obligatoire.",
     "FIELD_INVALID_DATE": "Date invalide (dd-MM-yyyy).",

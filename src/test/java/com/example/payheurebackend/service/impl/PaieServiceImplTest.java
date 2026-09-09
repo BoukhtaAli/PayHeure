@@ -207,4 +207,59 @@ class PaieServiceImplTest {
         assertThat(response.totalMinutes()).isZero();
         assertThat(response.montantTotal()).isEqualByComparingTo("0.00");
     }
+
+    @Test
+    void calculer_deuxBadgeagesALaMemeHeure_renvoieUneSessionDeDureeNulle() {
+        // Reproduit le bug signalé : un badgeage de 17h saisi deux fois (double bip à la borne ou
+        // ressaisie du même pointage). Les deux badgeages s'apparient en une session entrée 17h /
+        // sortie 17h, de durée nulle. Elle doit rester visible : sinon le salarié disparaît de
+        // tous les écrans (calcul de paie, anomalies, analytics, recherche par période) alors que
+        // ses deux pointages sont bien en base — et ajouter un pointage le ferait disparaître.
+        LocalDateTime dixSeptHeures = LocalDateTime.of(2026, 9, 1, 17, 0);
+        List<Pointage> pointagesJournee = List.of(pointage(AMEL, dixSeptHeures), pointage(AMEL, dixSeptHeures));
+
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(AMEL));
+        when(pointageRepository.findByEmployeeIdAndDateHeureBetweenOrderByDateHeureAsc(anyLong(), any(), any()))
+                .thenReturn(pointagesJournee);
+
+        PaieCalculResponse response = service.calculer(new PaieCalculRequest(
+                1L,
+                LocalDateTime.of(2026, 9, 1, 0, 0),
+                LocalDateTime.of(2026, 9, 1, 23, 59),
+                new BigDecimal("10.00")));
+
+        assertThat(response.pointages()).hasSize(2);
+        assertThat(response.sessions()).hasSize(1);
+        PointageSessionResponse session = response.sessions().get(0);
+        assertThat(session.anomalie()).isFalse();
+        assertThat(session.heureEntree()).isEqualTo(dixSeptHeures);
+        assertThat(session.heureSortie()).isEqualTo(dixSeptHeures);
+        assertThat(session.dureeMinutes()).isZero();
+        assertThat(response.totalMinutes()).isZero();
+        assertThat(response.totalDureeFormatee()).isEqualTo("0h 00min");
+        assertThat(response.montantTotal()).isEqualByComparingTo("0.00");
+    }
+
+    @Test
+    void calculer_sessionSeTerminantPileAuDebutDeLaFenetre_estExclue() {
+        // Garde-fou de la session à durée nulle ci-dessus : une vraie session (entrée 8h, sortie
+        // 9h) qui ne fait qu'effleurer la borne de début ne chevauche la fenêtre sur aucune durée
+        // et reste écartée, elle ne doit pas ressortir à 0 minute.
+        List<Pointage> pointagesJournee = List.of(
+                pointage(AMEL, LocalDateTime.of(2026, 9, 1, 8, 0)),
+                pointage(AMEL, LocalDateTime.of(2026, 9, 1, 9, 0)));
+
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(AMEL));
+        when(pointageRepository.findByEmployeeIdAndDateHeureBetweenOrderByDateHeureAsc(anyLong(), any(), any()))
+                .thenReturn(pointagesJournee);
+
+        PaieCalculResponse response = service.calculer(new PaieCalculRequest(
+                1L,
+                LocalDateTime.of(2026, 9, 1, 9, 0),
+                LocalDateTime.of(2026, 9, 1, 12, 0),
+                new BigDecimal("10.00")));
+
+        assertThat(response.sessions()).isEmpty();
+        assertThat(response.totalMinutes()).isZero();
+    }
 }
